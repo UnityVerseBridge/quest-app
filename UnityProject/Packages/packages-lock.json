@@ -363,7 +363,7 @@
       "dependencies": {
         "com.unity.webrtc": "3.0.0-pre.8"
       },
-      "hash": "f94252363089d2264f25b4153853b79c0257daf8"
+      "hash": "5816638d19ec13ebbb9375f3348cc76b6dfb36b2"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
