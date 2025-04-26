@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.boxqkrtm.ide.cursor": {
+      "version": "https://github.com/boxqkrtm/com.unity.ide.cursor.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.9"
+      },
+      "hash": "0a98b387a92cf9f1f47012fc46d4cf33576e5916"
+    },
     "com.endel.nativewebsocket": {
       "version": "https://github.com/endel/NativeWebSocket.git#upm",
       "depth": 0,
@@ -82,7 +91,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.13.1",
+      "version": "1.14.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -357,13 +366,13 @@
       "url": "https://packages.unity.com"
     },
     "com.unityversebridge.core": {
-      "version": "https://github.com/UnityVerseBridge/core.git#main",
+      "version": "file:D:/Unity/UnityVerseBridge/core",
       "depth": 0,
-      "source": "git",
+      "source": "local",
       "dependencies": {
-        "com.unity.webrtc": "3.0.0-pre.8"
-      },
-      "hash": "5816638d19ec13ebbb9375f3348cc76b6dfb36b2"
+        "com.unity.webrtc": "3.0.0-pre.8",
+        "com.unity.test-framework": "1.4.6"
+      }
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
