@@ -1,0 +1,20 @@
+{
+    "name": "UnityVerseBridge.QuestApp.Signaling.Adapters",
+    "rootNamespace": "UnityVerseBridge.QuestApp.Signaling",
+    "references": [
+        "GUID:6faa81845b861be409492551a105828e",
+        "GUID:04376767bc1f3b428aefa3d20743e819",
+        "GUID:f64c9ebcd7899c3448a08dc9f9ddbe30"
+    ],
+    "includePlatforms": [
+        "Android"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
