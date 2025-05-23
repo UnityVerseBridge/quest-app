@@ -1,0 +1,26 @@
+<linker>
+  <!-- NativeWebSocket 보존 -->
+  <assembly fullname="NativeWebSocket" preserve="all"/>
+  <assembly fullname="endel.nativewebsocket" preserve="all"/>
+  <assembly fullname="Meta.Net.endel.nativewebsocket" preserve="all"/>
+  
+  <!-- System.Net.WebSockets 보존 -->
+  <assembly fullname="System">
+    <type fullname="System.Net.WebSockets.ClientWebSocket" preserve="all"/>
+    <type fullname="System.Net.WebSockets.WebSocket" preserve="all"/>
+    <type fullname="System.Net.WebSockets.WebSocketContext" preserve="all"/>
+    <type fullname="System.Net.WebSockets.WebSocketReceiveResult" preserve="all"/>
+  </assembly>
+  
+  <!-- 추가 관련 타입들 -->
+  <assembly fullname="mscorlib">
+    <type fullname="System.Net.EndPoint" preserve="all"/>
+    <type fullname="System.Net.IPEndPoint" preserve="all"/>
+    <type fullname="System.Net.Sockets.Socket" preserve="all"/>
+    <type fullname="System.Threading.Tasks.Task" preserve="all"/>
+    <type fullname="System.Threading.Tasks.Task`1" preserve="all"/>
+  </assembly>
+  
+  <!-- Unity WebRTC 관련 -->
+  <assembly fullname="Unity.WebRTC" preserve="all"/>
+</linker>
