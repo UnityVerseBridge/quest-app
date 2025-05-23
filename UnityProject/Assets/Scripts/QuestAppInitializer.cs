@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityVerseBridge.Core; // WebRtcManager 사용
-using UnityVerseBridge.Core.Signaling; // SignalingClient 사용
-using UnityVerseBridge.Core.Signaling.Data; // SignalingMessageBase 사용
-using UnityVerseBridge.QuestApp.Signaling; // SystemWebSocketAdapter 사용
+using UnityVerseBridge.Core;
+using UnityVerseBridge.Core.Signaling;
+using UnityVerseBridge.Core.Signaling.Data;
+using UnityVerseBridge.QuestApp.Signaling;
 
 namespace UnityVerseBridge.QuestApp
 {
@@ -21,126 +21,181 @@ namespace UnityVerseBridge.QuestApp
         }
     }
     
-    /// <summary>
-    /// Quest 앱 시작 시 WebRtcManager와 플랫폼별 Signaling Adapter를 초기화하고 연결을 시작합니다.
-    /// </summary>
     public class QuestAppInitializer : MonoBehaviour
     {
         private string clientId;
-        private string roomId = "room_123"; // 테스트용 룸 ID
-        private SystemWebSocketAdapter webSocketAdapter; // WebSocket 어댑터
-        private SignalingClient signalingClient; // 시그널링 클라이언트
-        private bool hasMobilePeer = false; // Mobile peer가 접속했는지 여부
+        private SystemWebSocketAdapter webSocketAdapter;
+        private SignalingClient signalingClient;
+        private bool hasMobilePeer = false;
 
-        [Tooltip("씬에 있는 WebRtcManager를 연결합니다.")]
+        [Header("Dependencies")]
         [SerializeField] private WebRtcManager webRtcManager;
-        [Tooltip("WebRTC 설정을 담은 ScriptableObject 또는 컴포넌트를 연결합니다 (선택 사항).")]
-        [SerializeField] private WebRtcConfiguration webRtcConfiguration; // 예시, 실제 타입에 맞게 조정
-        [Tooltip("접속할 시그널링 서버의 기본 주소입니다.")]
-        [SerializeField] private string defaultSignalingServerUrl = "ws://localhost:8080";
-        [Tooltip("앱 시작 시 자동으로 시그널링 및 WebRTC 연결을 시도합니다.")]
+        [SerializeField] private ConnectionConfig connectionConfig;
+        [SerializeField] private WebRtcConfiguration webRtcConfiguration;
+        
+        [Header("Settings")]
         [SerializeField] private bool autoConnectOnStart = true;
 
         void Start()
         {
+            try
+            {
+                InitializeApp();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[QuestAppInitializer] Failed to initialize: {ex.Message}");
+            }
+        }
+
+        private void InitializeApp()
+        {
             Debug.Log("[QuestAppInitializer] Start() 호출됨");
             
-            // 클라이언트 ID 생성
-            clientId = "quest_" + SystemInfo.deviceUniqueIdentifier;
+            // Generate secure client ID
+            var deviceId = SystemInfo.deviceUniqueIdentifier;
+            clientId = $"quest_{GenerateHashedId(deviceId)}";
 
-            if (webRtcManager == null)
+            if (!ValidateDependencies())
             {
-                Debug.LogError("[QuestAppInitializer] WebRtcManager not found in scene. Please add WebRtcManager component to a GameObject.");
-                return; // WebRtcManager 없이는 진행 불가
+                throw new InvalidOperationException("Required dependencies are missing");
             }
 
-            // WebRtcManager 역할 설정 (QuestApp은 Offerer)
+            // WebRtcManager 설정
             webRtcManager.SetRole(true);
-
+            
             // WebSocket 어댑터와 시그널링 클라이언트 생성
             webSocketAdapter = new SystemWebSocketAdapter();
-            Debug.Log("[QuestAppInitializer] SystemWebSocketAdapter 생성됨.");
-
             signalingClient = new SignalingClient();
-            Debug.Log("[QuestAppInitializer] SignalingClient 생성됨.");
-
-            // --- 중요: WebRtcManager에 SignalingClient 설정 ---
-            if (webRtcManager != null && signalingClient != null)
-            {
-                webRtcManager.SetupSignaling(signalingClient);
-                Debug.Log("[QuestAppInitializer] WebRtcManager에 SignalingClient 설정 완료.");
-            }
-            // --- 여기까지 추가 ---
-
-            // 3. (선택 사항) 구성(Configuration) 설정
+            
+            webRtcManager.SetupSignaling(signalingClient);
+            
             if (webRtcConfiguration != null)
             {
                 webRtcManager.SetConfiguration(webRtcConfiguration);
-                Debug.Log("[QuestAppInitializer] WebRtcManager.SetConfiguration() 호출 완료.");
-            }
-            else
-            {
-                Debug.LogWarning("[QuestAppInitializer] webRtcConfiguration이 할당되지 않았습니다. WebRtcManager의 기본 설정을 사용합니다.");
             }
 
-            // 4. 시그널링 자동 연결
             if (autoConnectOnStart)
             {
-                Debug.Log($"[QuestAppInitializer] autoConnectOnStart=true. 시그널링 서버 ({defaultSignalingServerUrl}) 연결 시도...");
+                var serverUrl = connectionConfig.signalingServerUrl;
+                Debug.Log($"[QuestAppInitializer] Connecting to {serverUrl}...");
                 StartSignalingConnection();
             }
-            else
+        }
+
+        private bool ValidateDependencies()
+        {
+            if (webRtcManager == null)
             {
-                Debug.Log("[QuestAppInitializer] autoConnectOnStart=false. 자동 연결을 시작하지 않습니다.");
+                Debug.LogError("[QuestAppInitializer] WebRtcManager not assigned!");
+                return false;
             }
-            Debug.Log("[QuestAppInitializer] Start() 완료.");
+            
+            if (connectionConfig == null)
+            {
+                Debug.LogError("[QuestAppInitializer] ConnectionConfig not assigned!");
+                return false;
+            }
+            
+            return true;
+        }
+
+        private string GenerateHashedId(string input)
+        {
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
+                return BitConverter.ToString(bytes).Replace("-", "").Substring(0, 16).ToLower();
+            }
         }
 
         private async void StartSignalingConnection()
         {
-            try
+            int retryCount = 0;
+            int maxRetries = connectionConfig.maxReconnectAttempts;
+            
+            while (retryCount < maxRetries)
             {
-                // SignalingClient에 WebSocket 어댑터를 연결하고 서버에 연결
-                await signalingClient.InitializeAndConnect(webSocketAdapter, defaultSignalingServerUrl);
-                Debug.Log("[QuestAppInitializer] SignalingClient 연결 성공");
-                
-                // WebSocket이 열려있는지 확인
-                await Task.Delay(100); // 연결 안정화 대기
-                
-                // 클라이언트 등록
-                await RegisterClient();
-                
-                // peer-joined 이벤트 구독
-                signalingClient.OnSignalingMessageReceived += HandleSignalingMessage;
-                
-                // Register 완료 후 mobile peer를 기다림
-                Debug.Log("[QuestAppInitializer] Waiting for mobile peer to join...");
-                
-                // Mobile peer가 연결될 때까지 기다림 (timeout: 30초)
-                int waitTime = 0;
-                while (!hasMobilePeer && waitTime < 30000)
+                try
                 {
+                    // Authentication if required
+                    string serverUrl = connectionConfig.signalingServerUrl;
+                    if (connectionConfig.requireAuthentication)
+                    {
+                        var token = await AuthenticateAsync();
+                        serverUrl += $"?token={token}";
+                    }
+                    
+                    await signalingClient.InitializeAndConnect(webSocketAdapter, serverUrl);
+                    Debug.Log("[QuestAppInitializer] SignalingClient 연결 성공");
+                    
                     await Task.Delay(100);
-                    waitTime += 100;
+                    await RegisterClient();
+                    
+                    signalingClient.OnSignalingMessageReceived += HandleSignalingMessage;
+                    
+                    // Wait for mobile peer
+                    await WaitForMobilePeer();
+                    
+                    if (hasMobilePeer && webRtcManager != null)
+                    {
+                        Debug.Log("[QuestAppInitializer] Starting PeerConnection...");
+                        webRtcManager.StartPeerConnection();
+                    }
+                    
+                    break; // Success
                 }
-                
-                if (hasMobilePeer && webRtcManager != null)
+                catch (Exception ex)
                 {
-                    Debug.Log("[QuestAppInitializer] Mobile peer joined! Starting PeerConnection...");
-                    webRtcManager.StartPeerConnection();
-                }
-                else
-                {
-                    Debug.LogError("[QuestAppInitializer] Timeout waiting for mobile peer or WebRtcManager is null.");
+                    retryCount++;
+                    Debug.LogError($"[QuestAppInitializer] Connection attempt {retryCount} failed: {ex.Message}");
+                    
+                    if (retryCount < maxRetries)
+                    {
+                        float delay = Mathf.Pow(2, retryCount - 1); // Exponential backoff
+                        Debug.Log($"[QuestAppInitializer] Retrying in {delay} seconds...");
+                        await Task.Delay((int)(delay * 1000));
+                    }
                 }
             }
-            catch (Exception ex)
+            
+            if (retryCount >= maxRetries)
             {
-                Debug.LogError($"[QuestAppInitializer] 시그널링 연결 실패: {ex.Message}");
-                // 재시도 로직
-                Debug.Log("[QuestAppInitializer] 5초 후 재연결 시도...");
-                await Task.Delay(5000);
-                StartSignalingConnection();
+                Debug.LogError("[QuestAppInitializer] Max reconnection attempts reached. Connection failed.");
+            }
+        }
+
+        private async Task<string> AuthenticateAsync()
+        {
+            // Simple authentication - in production, use proper auth flow
+            var authData = new
+            {
+                clientId = clientId,
+                clientType = "quest",
+                authKey = connectionConfig.authKey
+            };
+            
+            // Simulate auth request (implement actual HTTP request)
+            await Task.Delay(100);
+            return "dummy-token"; // Replace with actual token from auth server
+        }
+
+        private async Task WaitForMobilePeer()
+        {
+            float timeout = connectionConfig.connectionTimeout * 1000;
+            float waited = 0;
+            
+            Debug.Log("[QuestAppInitializer] Waiting for mobile peer...");
+            
+            while (!hasMobilePeer && waited < timeout)
+            {
+                await Task.Delay(100);
+                waited += 100;
+            }
+            
+            if (!hasMobilePeer)
+            {
+                Debug.LogWarning($"[QuestAppInitializer] Timeout waiting for mobile peer after {timeout/1000}s");
             }
         }
         
@@ -152,13 +207,12 @@ namespace UnityVerseBridge.QuestApp
                 {
                     peerId = clientId,
                     clientType = "quest",
-                    roomId = roomId
+                    roomId = connectionConfig.GetRoomId()
                 };
                 
                 string jsonMessage = JsonUtility.ToJson(registerMessage);
                 Debug.Log($"[QuestAppInitializer] Registering client: {jsonMessage}");
                 
-                // JSON 문자열로 직접 전송
                 if (webSocketAdapter != null)
                 {
                     await webSocketAdapter.SendText(jsonMessage);
@@ -166,20 +220,21 @@ namespace UnityVerseBridge.QuestApp
                 }
                 else
                 {
-                    Debug.LogError("[QuestAppInitializer] WebSocketAdapter is null");
+                    throw new InvalidOperationException("WebSocketAdapter is null");
                 }
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[QuestAppInitializer] Failed to register client: {ex.Message}");
+                throw;
             }
         }
         
         private void HandleSignalingMessage(string type, string jsonData)
         {
-            if (type == "peer-joined")
+            try
             {
-                try
+                if (type == "peer-joined")
                 {
                     var peerInfo = JsonUtility.FromJson<PeerJoinedMessage>(jsonData);
                     if (peerInfo.clientType == "mobile")
@@ -188,19 +243,21 @@ namespace UnityVerseBridge.QuestApp
                         hasMobilePeer = true;
                     }
                 }
-                catch (Exception ex)
+                else if (type == "error")
                 {
-                    Debug.LogError($"[QuestAppInitializer] Failed to parse peer-joined message: {ex.Message}");
+                    var error = JsonUtility.FromJson<ErrorMessage>(jsonData);
+                    Debug.LogError($"[QuestAppInitializer] Server error: {error.error} (context: {error.context})");
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[QuestAppInitializer] Failed to handle message: {ex.Message}");
             }
         }
         
         void Update()
         {
-            // SystemWebSocket의 메시지 큐 처리
             webSocketAdapter?.DispatchMessageQueue();
-            
-            // SignalingClient의 메시지 처리
             signalingClient?.DispatchMessages();
         }
         
@@ -219,5 +276,13 @@ namespace UnityVerseBridge.QuestApp
         public string type;
         public string peerId;
         public string clientType;
+    }
+    
+    [System.Serializable]
+    public class ErrorMessage
+    {
+        public string type;
+        public string error;
+        public string context;
     }
 }
