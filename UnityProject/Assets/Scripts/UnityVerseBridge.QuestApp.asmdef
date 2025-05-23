@@ -2,18 +2,19 @@
     "name": "UnityVerseBridge.QuestApp",
     "rootNamespace": "UnityVerseBridge.QuestApp",
     "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
         "GUID:6faa81845b861be409492551a105828e",
         "GUID:08273813c12c9074ba62b930a80699e7",
-        "GUID:f64c9ebcd7899c3448a08dc9f9ddbe30"
+        "GUID:04376767bc1f3b428aefa3d20743e819",
+        "GUID:f64c9ebcd7899c3448a08dc9f9ddbe30",
+        "GUID:f12aafacab75a87499e7e45c873ffab8"
     ],
-    "includePlatforms": [
-        "Android"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": true,
+    "autoReferenced": false,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

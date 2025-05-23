@@ -1360,6 +1360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   webRtcManager: {fileID: 905667170}
+  connectionConfig: {fileID: 11400000, guid: 148e18c633241364e952a981cac6e079, type: 2}
   webRtcConfiguration:
     iceServers:
     - credential: 
@@ -1368,7 +1369,6 @@ MonoBehaviour:
       - stun:stun.l.google.com:19302
       username: 
     dataChannelLabel: sendChannel
-  defaultSignalingServerUrl: ws://localhost:8080
   autoConnectOnStart: 1
 --- !u!1 &934771341
 GameObject:

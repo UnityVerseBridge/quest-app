@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityVerseBridge.Core;
 using UnityVerseBridge.Core.Signaling;
 using UnityVerseBridge.Core.Signaling.Data;
@@ -118,15 +119,30 @@ namespace UnityVerseBridge.QuestApp
             {
                 try
                 {
-                    // Authentication if required
                     string serverUrl = connectionConfig.signalingServerUrl;
+                    
+                    // Authentication if required
+                    string connectUrl = serverUrl;
                     if (connectionConfig.requireAuthentication)
                     {
-                        var token = await AuthenticateAsync();
-                        serverUrl += $"?token={token}";
+                        Debug.Log("[QuestAppInitializer] Authenticating...");
+                        bool authSuccess = await AuthenticationHelper.AuthenticateAsync(
+                            serverUrl,
+                            clientId, 
+                            "quest", 
+                            connectionConfig.authKey
+                        );
+                        
+                        if (!authSuccess)
+                        {
+                            throw new Exception("Authentication failed");
+                        }
+                        
+                        // Add token to URL if authenticated
+                        connectUrl = AuthenticationHelper.AppendTokenToUrl(serverUrl);
                     }
                     
-                    await signalingClient.InitializeAndConnect(webSocketAdapter, serverUrl);
+                    await signalingClient.InitializeAndConnect(webSocketAdapter, connectUrl);
                     Debug.Log("[QuestAppInitializer] SignalingClient 연결 성공");
                     
                     await Task.Delay(100);
@@ -165,20 +181,7 @@ namespace UnityVerseBridge.QuestApp
             }
         }
 
-        private async Task<string> AuthenticateAsync()
-        {
-            // Simple authentication - in production, use proper auth flow
-            var authData = new
-            {
-                clientId = clientId,
-                clientType = "quest",
-                authKey = connectionConfig.authKey
-            };
-            
-            // Simulate auth request (implement actual HTTP request)
-            await Task.Delay(100);
-            return "dummy-token"; // Replace with actual token from auth server
-        }
+        // Removed AuthenticateAsync method - now using AuthenticationManager
 
         private async Task WaitForMobilePeer()
         {
@@ -285,4 +288,6 @@ namespace UnityVerseBridge.QuestApp
         public string error;
         public string context;
     }
+    
+    // Removed AuthRequest and AuthResponse - now in AuthenticationManager
 }
