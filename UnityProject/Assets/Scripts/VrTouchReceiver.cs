@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityVerseBridge.Core; // WebRtcManager 사용
 using UnityVerseBridge.Core.DataChannel.Data; // 데이터 구조 사용
 using System; // Exception 사용
+using TouchPhase = UnityVerseBridge.Core.DataChannel.Data.TouchPhase; // 명시적 타입 지정
 
 namespace UnityVerseBridge.QuestApp
 {
@@ -71,21 +72,84 @@ namespace UnityVerseBridge.QuestApp
             }
         }
 
+        [Header("Touch Visualization")]
+        [SerializeField] private Camera vrCamera; // VR 카메라 (터치 좌표 변환용)
+        [SerializeField] private float touchRayDistance = 10f; // 레이캐스트 거리
+        [SerializeField] private GameObject touchPointerPrefab; // 터치 위치 표시용 프리팹
+        
+        private GameObject currentTouchPointer;
+        
         private void ProcessTouchData(TouchData data)
         {
-            // 수신된 데이터 로그 출력 (기본)
-            Debug.Log($"[VrTouchReceiver] Processed Touch: ID={data.touchId}, Phase={data.phase}, Pos=({data.positionX:F3}, {data.positionY:F3})");
+            // 수신된 데이터 로그 출력
+            Debug.Log($"[VrTouchReceiver] Touch: ID={data.touchId}, Phase={data.phase}, Pos=({data.positionX:F3}, {data.positionY:F3})");
 
-            // --- 다음 단계에서 구현할 내용 ---
-            // TODO: 수신된 정규화 좌표(data.positionX, data.positionY)를
-            //       VR 공간 내의 적절한 좌표로 변환하는 로직 필요.
-            //       (예: 특정 UI 패널, 가상 테이블 위 등 기준 표면에 매핑)
+            // VR 카메라가 없으면 메인 카메라 사용
+            if (vrCamera == null)
+            {
+                vrCamera = Camera.main;
+                if (vrCamera == null)
+                {
+                    Debug.LogError("[VrTouchReceiver] No camera found for touch processing!");
+                    return;
+                }
+            }
 
-            // TODO: 변환된 좌표에 시각적 피드백(파티클, 포인터 등)을 표시하거나
-            //       해당 위치의 가상 객체와 상호작용하는 로직 구현.
+            // 정규화된 좌표를 스크린 좌표로 변환
+            Vector3 screenPos = new Vector3(
+                data.positionX * Screen.width,
+                data.positionY * Screen.height,
+                0f
+            );
 
-            // TODO: 터치 상태(Phase)에 따라 다른 처리 구현 (Began, Moved, Ended)
-            //       예: Began - 표시 생성, Moved - 표시 이동, Ended - 표시 제거
+            // 스크린 좌표를 월드 좌표로 변환 (레이캐스트)
+            Ray ray = vrCamera.ScreenPointToRay(screenPos);
+            RaycastHit hit;
+            
+            Vector3 worldPos;
+            if (Physics.Raycast(ray, out hit, touchRayDistance))
+            {
+                worldPos = hit.point;
+                Debug.Log($"[VrTouchReceiver] Touch hit at: {worldPos}, Object: {hit.collider.gameObject.name}");
+                
+                // UI 오브젝트인 경우 클릭 이벤트 발생
+                if (hit.collider.GetComponent<UnityEngine.UI.Button>() != null)
+                {
+                    hit.collider.GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+                }
+            }
+            else
+            {
+                // 레이캐스트가 실패하면 카메라 전방 일정 거리에 위치
+                worldPos = ray.origin + ray.direction * touchRayDistance;
+            }
+
+            // 터치 상태에 따른 처리
+            switch (data.phase)
+            {
+                case TouchPhase.Began:
+                    if (touchPointerPrefab != null && currentTouchPointer == null)
+                    {
+                        currentTouchPointer = Instantiate(touchPointerPrefab, worldPos, Quaternion.identity);
+                    }
+                    break;
+                    
+                case TouchPhase.Moved:
+                    if (currentTouchPointer != null)
+                    {
+                        currentTouchPointer.transform.position = worldPos;
+                    }
+                    break;
+                    
+                case TouchPhase.Ended:
+                case TouchPhase.Canceled:
+                    if (currentTouchPointer != null)
+                    {
+                        Destroy(currentTouchPointer);
+                        currentTouchPointer = null;
+                    }
+                    break;
+            }
         }
     }
 }
