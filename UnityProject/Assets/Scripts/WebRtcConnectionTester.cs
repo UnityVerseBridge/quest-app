@@ -3,8 +3,9 @@ using UnityEngine.UI;
 using UnityVerseBridge.Core;
 using UnityVerseBridge.QuestApp;
 using UnityVerseBridge.Core.Signaling;
-using UnityVerseBridge.QuestApp.Signaling;
+using UnityVerseBridge.Core.Signaling.Adapters;
 using System.Threading.Tasks;
+using TMPro;
 
 namespace UnityVerseBridge.QuestApp.Test
 {
@@ -17,7 +18,7 @@ namespace UnityVerseBridge.QuestApp.Test
         [SerializeField] private VrHapticRequester hapticRequester;
 
         [Header("UI 요소")]
-        [SerializeField] private Text statusText;
+        [SerializeField] private TextMeshProUGUI statusText;
         [SerializeField] private Button connectButton;
         [SerializeField] private Button disconnectButton;
         [SerializeField] private Button sendTestMessageButton;
