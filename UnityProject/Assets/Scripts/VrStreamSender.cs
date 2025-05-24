@@ -24,19 +24,18 @@ namespace UnityVerseBridge.QuestApp
         
         void Start()
         {
-            Debug.Log("[VrStreamSender] Start() 호출됨");
             if (webRtcManager == null)
             {
                 Debug.LogError("[VrStreamSender] WebRtcManager가 할당되지 않았습니다!");
                 enabled = false;
                 return;
             }
-            Debug.Log($"[VrStreamSender] WebRtcManager 할당됨: {webRtcManager.name}");
+
             
             // 카메라 설정 - 지정 안 된 경우 Main Camera 사용
             if (targetCamera == null)
             {
-                Debug.Log("[VrStreamSender] targetCamera가 null이므로 Camera.main을 사용합니다.");
+
                 targetCamera = Camera.main;
             }
                 
@@ -46,13 +45,15 @@ namespace UnityVerseBridge.QuestApp
                 enabled = false;
                 return;
             }
-            Debug.Log($"[VrStreamSender] targetCamera 할당됨: {targetCamera.name}, 활성 상태: {targetCamera.gameObject.activeInHierarchy}");
+
             
             // RenderTexture 생성 또는 확인
             if (sourceRenderTexture == null)
             {
                 Debug.LogWarning("[VrStreamSender] sourceRenderTexture가 Inspector에서 할당되지 않아 자동 생성합니다 (1280x720).");
-                sourceRenderTexture = new RenderTexture(1280, 720, 24, RenderTextureFormat.DefaultHDR); // HDR 포맷 사용 고려
+                // WebRTC 스트리밍을 위해 B8G8R8A8_SRGB 포맷 사용
+                // B8G8R8A8_SRGB 포맷 사용 (Unity의 BGRA32 + sRGB 설정)
+                sourceRenderTexture = new RenderTexture(1280, 720, 24, RenderTextureFormat.BGRA32, RenderTextureReadWrite.sRGB);
                 sourceRenderTexture.name = "StreamRenderTexture_AutoCreated";
                 sourceRenderTexture.Create(); // 생성 후 바로 Create()
             }
@@ -67,45 +68,35 @@ namespace UnityVerseBridge.QuestApp
                 Debug.LogWarning($"[VrStreamSender] sourceRenderTexture ({sourceRenderTexture.name})가 생성되지 않아 Create()를 호출합니다.");
                 sourceRenderTexture.Create();
             }
-            Debug.Log($"[VrStreamSender] sourceRenderTexture ({sourceRenderTexture.name}) 최종 상태 - Size: {sourceRenderTexture.width}x{sourceRenderTexture.height}, Created: {sourceRenderTexture.IsCreated()}, GraphicsFormat: {sourceRenderTexture.graphicsFormat}");
+
 
             // 게임 뷰 표시 여부에 따라 다른 설정
             if (showInGameView)
             {
-                Debug.Log("[VrStreamSender] showInGameView=true. 미러 카메라 설정을 시작합니다.");
+
                 SetupMirrorCamera(); // 새로운 방식: 카메라 복제 사용
             }
             else
             {
-                Debug.Log("[VrStreamSender] showInGameView=false. targetCamera의 targetTexture를 sourceRenderTexture로 직접 설정합니다.");
+
                 targetCamera.targetTexture = sourceRenderTexture;
             }
             
             // UI 미리보기 설정 (선택 사항)
             if (previewImage != null)
             {
-                Debug.Log($"[VrStreamSender] previewImage ({previewImage.gameObject.name})에 sourceRenderTexture 할당 시도.");
                 previewImage.texture = sourceRenderTexture;
-                if (previewImage.texture == sourceRenderTexture)
-                    Debug.Log("[VrStreamSender] previewImage에 텍스처 할당 성공.");
-                else
-                    Debug.LogError("[VrStreamSender] previewImage에 텍스처 할당 실패!");
             }
-            else
-            {
-                Debug.Log("[VrStreamSender] previewImage가 할당되지 않았습니다.");
-            }
+
             
             // WebRTC 연결 성공 이벤트 구독
-            Debug.Log("[VrStreamSender] WebRtcManager.OnWebRtcConnected 이벤트 구독 시도.");
             webRtcManager.OnWebRtcConnected += StartStreaming;
-            Debug.Log("[VrStreamSender] Start() 완료.");
         }
         
         // 새로운 방식: 메인 카메라와 동일하게 세팅된 복제 카메라를 생성하여 사용
         private void SetupMirrorCamera()
         {
-            Debug.Log($"[VrStreamSender] SetupMirrorCamera() 호출됨 (targetCamera: {targetCamera.name}).");
+
             if (mirrorCamera != null)
             {
                 Debug.LogWarning("[VrStreamSender] 기존 mirrorCamera가 이미 존재합니다. 정리 후 다시 생성합니다.");
@@ -124,7 +115,7 @@ namespace UnityVerseBridge.QuestApp
             
             // 메인 카메라 설정 복사
             mirrorCamera.CopyFrom(targetCamera);
-            Debug.Log("[VrStreamSender] mirrorCamera.CopyFrom(targetCamera) 완료.");
+
             
             // 특정 설정은 다시 지정
             mirrorCamera.targetTexture = sourceRenderTexture;
@@ -133,13 +124,7 @@ namespace UnityVerseBridge.QuestApp
             mirrorCamera.enabled = true; // 명시적으로 활성화
             targetCamera.targetTexture = null; // 원본 카메라는 게임 뷰에 직접 렌더링하도록 targetTexture를 null로 설정
 
-            Debug.Log($"[VrStreamSender] mirrorCamera ({mirrorCamera.name}) 설정 완료: targetTexture={mirrorCamera.targetTexture?.name}, depth={mirrorCamera.depth}, enabled={mirrorCamera.enabled}");
-            Debug.Log($"[VrStreamSender] targetCamera ({targetCamera.name}) 설정 완료: targetTexture is null: {targetCamera.targetTexture == null}");
-            
-            // 위치 및 회전 동기화는 이제 부모-자식 관계로 처리되므로 별도 코루틴 불필요
-            // StartCoroutine(SyncCameraTransform()); // 제거
-            
-            Debug.Log("[VrStreamSender] 미러 카메라 설정 완료: 게임 뷰와 RenderTexture 모두 표시 (부모-자식 동기화)");
+
         }
         
         // 미러 카메라의 변환을 메인 카메라와 동기화 (이제 사용 안 함)
@@ -165,11 +150,10 @@ namespace UnityVerseBridge.QuestApp
 
         void OnDestroy()
         {
-            Debug.Log("[VrStreamSender] OnDestroy() 호출됨");
             // 이벤트 구독 해지 및 트랙 정리
             if (webRtcManager != null)
             {
-                Debug.Log("[VrStreamSender] WebRtcManager.OnWebRtcConnected 이벤트 구독 해지.");
+
                 webRtcManager.OnWebRtcConnected -= StartStreaming;
             }
             
@@ -178,27 +162,24 @@ namespace UnityVerseBridge.QuestApp
             // 미러 카메라 정리
             if (mirrorCamera != null)
             {
-                Debug.Log($"[VrStreamSender] mirrorCamera ({mirrorCamera.name}) 제거 시도.");
                 if (Application.isPlaying)
                     Destroy(mirrorCamera.gameObject);
                 else
                     DestroyImmediate(mirrorCamera.gameObject);
                 mirrorCamera = null;
-                Debug.Log("[VrStreamSender] mirrorCamera 제거 완료.");
             }
             
             // 타겟 카메라 설정 복원 (showInGameView가 false였을 경우에만)
             if (targetCamera != null && !showInGameView && sourceRenderTexture == targetCamera.targetTexture)
             {
-                Debug.Log($"[VrStreamSender] targetCamera ({targetCamera.name})의 targetTexture를 null로 복원합니다 (원래는 sourceRenderTexture였음).");
+
                 targetCamera.targetTexture = null; // 복원 시에는 null로 설정 (원래 상태로)
             }
-            Debug.Log("[VrStreamSender] OnDestroy() 완료.");
+
         }
 
-        private void StartStreaming()
+        private async void StartStreaming()
         {
-            Debug.Log("[VrStreamSender] StartStreaming() 호출됨.");
             if (trackAdded)
             {
                 Debug.LogWarning("[VrStreamSender] 이미 비디오 트랙이 추가되어 스트리밍 중입니다. 중복 호출 방지.");
@@ -206,6 +187,9 @@ namespace UnityVerseBridge.QuestApp
             }
 
             Debug.Log("[VrStreamSender] WebRTC Connected. Starting video stream...");
+            
+            // Wait a bit for initial negotiation to complete
+            await System.Threading.Tasks.Task.Delay(1000);
 
             if (sourceRenderTexture == null)
             {
@@ -217,13 +201,12 @@ namespace UnityVerseBridge.QuestApp
                  Debug.LogError($"[VrStreamSender] sourceRenderTexture ({sourceRenderTexture.name})가 생성되지 않았습니다! 비디오 트랙을 생성할 수 없습니다.");
                 return;
             }
-            Debug.Log($"[VrStreamSender] sourceRenderTexture ({sourceRenderTexture.name}) 확인 완료 - Size: {sourceRenderTexture.width}x{sourceRenderTexture.height}, Created: {sourceRenderTexture.IsCreated()}, GraphicsFormat: {sourceRenderTexture.graphicsFormat}");
+
 
             try
             {
-                Debug.Log("[VrStreamSender] VideoStreamTrack 생성 시도...");
                 videoStreamTrack = new VideoStreamTrack(sourceRenderTexture);
-                Debug.Log($"[VrStreamSender] VideoStreamTrack 생성 성공! Track ID: {videoStreamTrack.Id}, Kind: {videoStreamTrack.Kind}, ReadyState: {videoStreamTrack.ReadyState}");
+                Debug.Log($"[VrStreamSender] VideoStreamTrack created successfully. Track ID: {videoStreamTrack.Id}");
             }
             catch (Exception e)
             {
@@ -239,10 +222,9 @@ namespace UnityVerseBridge.QuestApp
 
             try
             {
-                Debug.Log("[VrStreamSender] WebRtcManager.AddVideoTrack() 호출 시도...");
                 webRtcManager.AddVideoTrack(videoStreamTrack);
                 trackAdded = true;
-                Debug.Log("[VrStreamSender] WebRtcManager.AddVideoTrack() 호출 성공. trackAdded = true.");
+                Debug.Log("[VrStreamSender] Video track added to WebRTC connection");
             }
             catch (Exception e)
             {
@@ -253,21 +235,15 @@ namespace UnityVerseBridge.QuestApp
 
         private void StopStreaming()
         {
-            Debug.Log("[VrStreamSender] StopStreaming() 호출됨.");
             if (videoStreamTrack != null)
             {
-                Debug.Log($"[VrStreamSender] 기존 비디오 트랙 (ID: {videoStreamTrack.Id}) 정리 시도...");
                 // TODO: WebRtcManager에 RemoveTrack 기능 구현 필요
                 // if (webRtcManager != null) webRtcManager.RemoveTrack(videoStreamTrack);
                 videoStreamTrack.Dispose(); // 트랙 리소스 해제
                 videoStreamTrack = null;
                 trackAdded = false;
-                Debug.Log("[VrStreamSender] 비디오 스트림 트랙 중지 및 정리 완료. trackAdded = false.");
             }
-            else
-            {
-                Debug.Log("[VrStreamSender] 정리할 비디오 트랙이 없습니다.");
-            }
+
         }
     }
 }
