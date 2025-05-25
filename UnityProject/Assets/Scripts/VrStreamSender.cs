@@ -71,16 +71,17 @@ namespace UnityVerseBridge.QuestApp
 
 
             // 게임 뷰 표시 여부에 따라 다른 설정
-            if (showInGameView)
+            // showInGameView = true: VR 헤드셋에도 표시하고 스트리밍도 함
+            // showInGameView = false: 스트리밍만 하고 VR 헤드셋에는 표시 안 함
+        if (showInGameView)
             {
-
-                SetupMirrorCamera(); // 새로운 방식: 카메라 복제 사용
+                SetupMirrorCamera(); // 미러 카메라를 생성하여 두 곳에 렌더링
             }
             else
-            {
-
+        {
+            // 메인 카메라의 출력을 RenderTexture로 변경 (헤드셋에 안 보임)
                 targetCamera.targetTexture = sourceRenderTexture;
-            }
+        }
             
             // UI 미리보기 설정 (선택 사항)
             if (previewImage != null)
@@ -93,7 +94,11 @@ namespace UnityVerseBridge.QuestApp
             webRtcManager.OnWebRtcConnected += StartStreaming;
         }
         
-        // 새로운 방식: 메인 카메라와 동일하게 세팅된 복제 카메라를 생성하여 사용
+        /// <summary>
+        /// 미러 카메라를 생성하여 VR 헤드셋과 스트리밍을 동시에 처리합니다.
+        /// 메인 카메라는 VR 헤드셋에 그대로 표시하고,
+        /// 미러 카메라는 RenderTexture에 렌더링하여 스트리밍합니다.
+        /// </summary>
         private void SetupMirrorCamera()
         {
 
@@ -110,19 +115,24 @@ namespace UnityVerseBridge.QuestApp
             mirrorCameraObj.transform.localRotation = Quaternion.identity;
             mirrorCameraObj.transform.localScale = Vector3.one;
             
-            // 미러 카메라 설정
+            // 미러 카메라 컴포넌트 추가 및 설정 복사
             mirrorCamera = mirrorCameraObj.AddComponent<Camera>();
             
-            // 메인 카메라 설정 복사
+            // CopyFrom: 메인 카메라의 모든 설정을 복사
+            // FOV, Near/Far plane, Culling mask, Clear flags 등 모두 포함
             mirrorCamera.CopyFrom(targetCamera);
 
             
-            // 특정 설정은 다시 지정
-            mirrorCamera.targetTexture = sourceRenderTexture;
-            // URP에서는 depth 값만으로 렌더링 순서 제어가 완벽하지 않을 수 있음. Stacked Camera 등을 고려할 수 있으나, 우선 depth로 시도.
+            // 스트리밍을 위한 설정 오버라이드
+            mirrorCamera.targetTexture = sourceRenderTexture; // 미러 카메라는 RenderTexture로 출력
+            
+            // 렌더링 순서 설정 (URP/Built-in 모두 지원)
+            // 미러 카메라를 먼저 렌더링하여 RenderTexture에 저장
             mirrorCamera.depth = targetCamera.depth - 1; 
-            mirrorCamera.enabled = true; // 명시적으로 활성화
-            targetCamera.targetTexture = null; // 원본 카메라는 게임 뷰에 직접 렌더링하도록 targetTexture를 null로 설정
+            mirrorCamera.enabled = true;
+            
+            // 원본 카메라는 VR 헤드셋에 직접 렌더링
+            targetCamera.targetTexture = null;
 
 
         }
