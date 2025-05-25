@@ -28,6 +28,7 @@ namespace UnityVerseBridge.QuestApp.Test
         [SerializeField] private string defaultServerUrl = "ws://localhost:8080";
         [SerializeField] private RenderTexture testRenderTexture;
         [SerializeField] private bool autoConnectOnStartByTester = false; // 테스터의 자동 연결 플래그 (QuestAppInitializer와 역할 분리)
+        private bool isInitializerHandlingConnection = false; // QuestAppInitializer가 연결을 처리 중인지 확인
 
         private bool uiDrivenIsConnected = false; // WebRTC 연결 상태 (UI 업데이트 및 버튼 제어용)
 
@@ -69,9 +70,14 @@ namespace UnityVerseBridge.QuestApp.Test
 
             UpdateUI(); // 초기 UI 상태 설정
             
-            // 이 테스터의 자동 연결은 QuestAppInitializer의 autoConnectOnStart와는 별개로 동작
-            // QuestAppInitializer가 주도적으로 연결을 시작하는 것이 권장됨
-            if (autoConnectOnStartByTester && webRtcManager != null)
+            // QuestAppInitializer가 이미 연결을 처리하고 있는지 확인
+            var initializer = FindObjectOfType<QuestAppInitializer>();
+            if (initializer != null && initializer.enabled)
+            {
+                isInitializerHandlingConnection = true;
+                Debug.Log("[WebRtcConnectionTester] QuestAppInitializer가 연결을 처리합니다. 테스터는 모니터링만 수행합니다.");
+            }
+            else if (autoConnectOnStartByTester && webRtcManager != null)
             {
                 Debug.Log("[WebRtcConnectionTester] autoConnectOnStartByTester=true. 연결 시도...");
                 InitiateConnection();
@@ -121,6 +127,12 @@ namespace UnityVerseBridge.QuestApp.Test
 
         private async void InitiateConnection() 
         {
+            if (isInitializerHandlingConnection)
+            {
+                LogStatus("QuestAppInitializer가 연결을 처리 중입니다.");
+                return;
+            }
+            
             if (webRtcManager == null)
             {
                 LogStatus("오류: WebRtcManager가 없어 연결할 수 없습니다.");
