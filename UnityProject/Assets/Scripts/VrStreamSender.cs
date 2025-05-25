@@ -30,6 +30,8 @@ namespace UnityVerseBridge.QuestApp
                 enabled = false;
                 return;
             }
+            
+            Debug.Log($"[VrStreamSender] WebRTC connection state at start: {webRtcManager.IsWebRtcConnected}");
 
             
             // 카메라 설정 - 지정 안 된 경우 Main Camera 사용
@@ -215,8 +217,23 @@ namespace UnityVerseBridge.QuestApp
 
             try
             {
+                // Get supported format for current graphics API
+                var gfxType = SystemInfo.graphicsDeviceType;
+                var supportedFormat = WebRTC.GetSupportedRenderTextureFormat(gfxType);
+                Debug.Log($"[VrStreamSender] Graphics API: {gfxType}, Supported format: {supportedFormat}");
+                
                 videoStreamTrack = new VideoStreamTrack(sourceRenderTexture);
                 Debug.Log($"[VrStreamSender] VideoStreamTrack created successfully. Track ID: {videoStreamTrack.Id}");
+                
+                // Wait a bit for encoder to be ready (Unity WebRTC internal initialization)
+                await System.Threading.Tasks.Task.Delay(500);
+                
+                // Check if track is enabled
+                if (!videoStreamTrack.Enabled)
+                {
+                    Debug.LogWarning("[VrStreamSender] Video track is not enabled. Enabling...");
+                    videoStreamTrack.Enabled = true;
+                }
             }
             catch (Exception e)
             {
