@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -33,15 +34,29 @@ namespace UnityVerseBridge.QuestApp
                 // Critical: WebRTC.Update() coroutine must be started first
                 StartCoroutine(WebRTC.Update());
                 
-                // Note: In newer Unity WebRTC versions, explicit Initialize() is not needed
-                // WebRTC initializes automatically when first used
-                
-                InitializeApp();
+                // Platform-specific initialization
+                StartCoroutine(InitializeWithPlatformDelay());
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[QuestAppInitializer] Failed to initialize: {ex.Message}");
             }
+        }
+        
+        private IEnumerator InitializeWithPlatformDelay()
+        {
+            // macOS Metal needs extra initialization time
+            if (Application.platform == RuntimePlatform.OSXEditor || 
+                Application.platform == RuntimePlatform.OSXPlayer)
+            {
+                yield return new WaitForSeconds(0.2f);
+            }
+            else
+            {
+                yield return null;
+            }
+            
+            InitializeApp();
         }
 
         private void InitializeApp()
@@ -71,11 +86,16 @@ namespace UnityVerseBridge.QuestApp
                 webRtcManager.SetConfiguration(webRtcConfiguration);
             }
 
+            // Set role as Offerer
+            webRtcManager.SetRole(true);
+            // Disable auto-start to control timing manually
+            webRtcManager.autoStartPeerConnection = false;
+
             if (autoConnectOnStart)
             {
                 var serverUrl = connectionConfig.signalingServerUrl;
                 Debug.Log($"[QuestAppInitializer] Connecting to {serverUrl}...");
-                StartSignalingConnection();
+                StartCoroutine(DelayedSignalingConnection());
             }
         }
 
@@ -150,9 +170,11 @@ namespace UnityVerseBridge.QuestApp
                     
                     if (hasMobilePeer && webRtcManager != null)
                     {
-                        Debug.Log("[QuestAppInitializer] Starting PeerConnection...");
-                        webRtcManager.StartPeerConnection();
-                    }
+                    Debug.Log("[QuestAppInitializer] Mobile peer joined. Starting PeerConnection...");
+                    // Wait a bit to ensure signaling is stable
+                        await Task.Delay(500);
+                webRtcManager.StartPeerConnection();
+            }
                     
                     break; // Success
                 }
@@ -259,6 +281,13 @@ namespace UnityVerseBridge.QuestApp
             signalingClient?.DispatchMessages();
         }
         
+        private IEnumerator DelayedSignalingConnection()
+        {
+            // Wait for WebRTC initialization to complete
+            yield return new WaitForSeconds(0.5f);
+            StartSignalingConnection();
+        }
+
         void OnDestroy()
         {
             if (signalingClient != null)
