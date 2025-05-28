@@ -20,9 +20,9 @@ Meta Quest VR 헤드셋에서 실행되는 Unity 애플리케이션으로, 모�
 
 ## 🛠️ 기술 스택
 
-- Unity 2021.3 LTS
+- Unity 6 LTS (6000.0.33f1) 또는 Unity 2022.3 LTS
 - Meta XR SDK (구 Oculus Integration)
-- Unity WebRTC 3.0.0+
+- Unity WebRTC 3.0.0-pre.8+
 - UnityVerseBridge.Core Package
 
 ## 📋 요구사항
@@ -32,7 +32,7 @@ Meta Quest VR 헤드셋에서 실행되는 Unity 애플리케이션으로, 모�
 - 개발용 PC (Windows/Mac)
 
 ### 소프트웨어
-- Unity 2021.3 LTS 이상
+- Unity 6 LTS (6000.0.33f1) 이상 또는 Unity 2022.3 LTS
 - Meta XR SDK
 - Android Build Support
 
@@ -40,13 +40,13 @@ Meta Quest VR 헤드셋에서 실행되는 Unity 애플리케이션으로, 모�
 
 ### 1. 프로젝트 클론
 ```bash
-git clone https://github.com/yourusername/UnityVerseBridge-Quest.git
-cd UnityVerseBridge-Quest
+git clone https://github.com/UnityVerseBridge/quest-app.git
+cd quest-app
 ```
 
 ### 2. Unity에서 프로젝트 열기
 - Unity Hub에서 "Open" > 프로젝트 폴더 선택
-- Unity 2021.3 LTS 버전으로 열기
+- Unity 6 LTS 또는 Unity 2022.3 LTS 버전으로 열기
 
 ### 3. 필수 패키지 설치
 Package Manager에서 다음 패키지들이 설치되어 있는지 확인:
@@ -54,6 +54,7 @@ Package Manager에서 다음 패키지들이 설치되어 있는지 확인:
 - Oculus XR Plugin
 - Unity WebRTC
 - TextMeshPro
+- UnityVerseBridge.Core (로컬 패키지)
 
 ### 4. 빌드 설정
 1. File > Build Settings
@@ -153,16 +154,16 @@ SampleScene
 
 ## 🌐 시그널링 서버 연결
 
-### 로컬 테스트
+### ConnectionConfig 설정
 ```
-ws://localhost:8080
+Signaling Server URL: ws://YOUR_SERVER_IP:YOUR_PORT
+Room ID: default-room (또는 원하는 룸 이름)
+Client Type: Quest
+Auto Connect: true
+Connection Timeout: 30
 ```
 
-### 원격 서버
-ConnectionConfig에서 URL 수정:
-```
-ws://your-server-ip:8080
-```
+포트는 시그널링 서버의 .env 파일에서 설정한 포트를 사용합니다.
 
 ## 🎨 터치 시각화 (선택사항)
 
@@ -178,7 +179,7 @@ ws://your-server-ip:8080
 1. Console에서 에러 확인
 2. `VideoStreamTrack created successfully` 로그 확인
 3. RenderTexture가 Created 상태인지 확인
-4. WebRTC 패키지 버전 확인 (3.0.0+)
+4. WebRTC 패키지 버전 확인 (3.0.0-pre.8+)
 
 ### 터치가 인식되지 않는 경우
 1. DataChannel 열림 상태 확인
@@ -187,13 +188,13 @@ ws://your-server-ip:8080
 
 ### 성능 최적화
 - RenderTexture 해상도 조정 (720p 권장)
-- Fixed Foveated Rendering 활성화
+- Fixed Foveated Rendering 활성화 (향후 구현)
 - 불필요한 후처리 효과 비활성화
 
 ## 📱 모바일 앱과의 연동
 
 1. 동일한 시그널링 서버에 연결
-2. 동일한 룸 ID 사용 (기본: "default-room")
+2. 동일한 룸 ID 사용
 3. Quest 앱이 먼저 실행되어야 함 (Offerer 역할)
 
 ## 🔒 보안 고려사항
@@ -202,6 +203,29 @@ ws://your-server-ip:8080
 - 인증 토큰 구현 (ConnectionConfig.authKey)
 - 룸 ID를 동적으로 생성하여 사용
 
+## 🚧 향후 개발 계획
+
+### 우선순위 높음
+- 오디오 스트리밍 지원
+- AR 모드 (Quest 3 패스스루)
+
+### 중간 우선순위  
+- RemoveTrack 기능 구현
+- 1:N 연결 지원
+
+### 장기 계획
+- 성능 최적화 (Fixed Foveated Rendering)
+- 동적 해상도 조정
+- 클라우드 렌더링 지원
+
 ## 📄 라이선스
 
-MIT License
+이 프로젝트는 BSD 3-Clause 라이선스를 따릅니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
+
+## 👥 제작자
+
+- **kugorang** - [GitHub](https://github.com/kugorang)
+
+---
+
+문제가 있거나 제안사항이 있으시면 [Issues](https://github.com/UnityVerseBridge/quest-app/issues)에 등록해주세요.
