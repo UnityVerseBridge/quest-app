@@ -8,8 +8,12 @@ Meta Quest VR 헤드셋에서 실행되는 Unity 애플리케이션으로, 모�
 
 **주요 기능:**
 - VR 카메라 뷰를 모바일로 실시간 스트리밍
+- **[NEW] MR 패스스루 화면 스트리밍 (Quest 3)**
+- **[NEW] 1:N 멀티 피어 연결 지원**
 - 모바일 터치 입력을 VR 공간 좌표로 변환
+- **[NEW] 멀티터치 동시 입력 처리 (여러 기기)**
 - 햅틱 피드백 요청 및 처리
+- 양방향 오디오 통신
 - 룸 기반 자동 매칭
 
 ## 🎮 사용 시나리오
@@ -17,6 +21,8 @@ Meta Quest VR 헤드셋에서 실행되는 Unity 애플리케이션으로, 모�
 1. **VR 협업**: VR 사용자의 시야를 모바일 사용자와 공유
 2. **원격 제어**: 모바일 기기로 VR 내 오브젝트 조작
 3. **관전 모드**: VR 게임/경험을 외부에서 관찰
+4. **[NEW] MR 공유**: Quest 3의 실제 환경과 가상 오브젝트를 함께 스트리밍
+5. **[NEW] 다중 사용자 상호작용**: 최대 8명이 동시에 VR 환경 제어
 
 ## 🛠️ 기술 스택
 
@@ -76,8 +82,11 @@ Assets/
 ├── Scripts/
 │   ├── QuestAppInitializer.cs    # 앱 초기화 및 연결 관리
 │   ├── VrStreamSender.cs         # VR 화면 스트리밍
+│   ├── VrMRStreamSender.cs       # [NEW] MR 패스스루 스트리밍
 │   ├── VrTouchReceiver.cs        # 터치 입력 처리
+│   ├── VrMultiTouchReceiver.cs   # [NEW] 멀티터치 입력 처리
 │   ├── VrHapticRequester.cs      # 햅틱 피드백
+│   ├── QuestAudioCommunicator.cs # [NEW] 양방향 오디오 통신
 │   └── WebRtcConnectionTester.cs # 연결 테스트 UI
 ├── Scenes/
 │   └── SampleScene.unity         # 메인 씬
@@ -114,6 +123,32 @@ VR 카메라의 렌더링을 RenderTexture로 캡처하여 WebRTC로 전송합�
 3. 물리 Raycast로 3D 위치 계산
 4. UI/3D 오브젝트 상호작용 처리
 
+### [NEW] VrMRStreamSender
+Quest 3의 MR 패스스루 화면을 여러 모바일 기기로 동시에 스트리밍합니다.
+
+**주요 기능:**
+- MultiPeerWebRtcManager를 통한 1:N 스트리밍
+- 적응형 해상도 조정 (피어 수에 따른 품질 최적화)
+- OVR 패스스루 레이어 캡처
+- 실시간 성능 모니터링
+
+### [NEW] VrMultiTouchReceiver
+여러 모바일 기기로부터 동시에 터치 입력을 받아 처리합니다.
+
+**특징:**
+- 피어별 고유 색상 구분 (최대 8개 기기)
+- 터치 트레일 및 애니메이션 효과
+- 2D UI 오버레이로 터치 위치 시각화
+- 실시간 터치 좌표 추적
+
+### [NEW] QuestAudioCommunicator
+Core 패키지의 AudioStreamManager를 활용한 양방향 오디오 통신을 제공합니다.
+
+**구성:**
+- 마이크 입력 스트리밍
+- 원격 오디오 수신 및 재생
+- Quest 환경에 최적화된 설정
+
 ## 🔧 설정 가이드
 
 ### StreamTexture 설정
@@ -130,11 +165,13 @@ SampleScene
 │   ├── Camera Offset
 │   │   └── Main Camera (태그: MainCamera)
 │   └── Controllers
-├── WebRTC Manager
+├── WebRTC Manager (또는 MultiPeerWebRtcManager)
 ├── Quest App Manager
-│   ├── VrStreamSender
-│   └── VrTouchReceiver
+│   ├── VrStreamSender (또는 VrMRStreamSender)
+│   ├── VrTouchReceiver (또는 VrMultiTouchReceiver)
+│   └── QuestAudioCommunicator
 └── UI Canvas
+    └── Touch Display Canvas (멀티터치용)
 ```
 
 ### 컴포넌트 연결
@@ -151,6 +188,19 @@ SampleScene
 3. **VrTouchReceiver**:
    - WebRtcManager 할당
    - VR Camera: Main Camera (자동 감지)
+
+4. **[NEW] VrMRStreamSender** (MR 스트리밍용):
+   - MultiPeerWebRtcManager 할당
+   - MR Camera: CenterEyeAnchor
+   - Stream Resolution: 1280x720
+   - Use Adaptive Resolution: true
+   - Capture Passthrough: true
+
+5. **[NEW] VrMultiTouchReceiver** (멀티터치용):
+   - MultiPeerWebRtcManager 할당
+   - Touch Canvas: 자동 생성됨
+   - Touch Pointer Prefab: 기본값 사용
+   - Show Peer Label: true
 
 ## 🌐 시그널링 서버 연결
 
@@ -203,20 +253,40 @@ Connection Timeout: 30
 - 인증 토큰 구현 (ConnectionConfig.authKey)
 - 룸 ID를 동적으로 생성하여 사용
 
+## 🆕 최신 기능 (v2.0)
+
+### 완료된 기능
+- ✅ **1:N 멀티 피어 연결**: 최대 8명의 모바일 사용자가 동시 연결
+- ✅ **MR 패스스루 스트리밍**: Quest 3의 실제 환경 스트리밍
+- ✅ **멀티터치 입력**: 여러 기기의 동시 터치 처리
+- ✅ **양방향 오디오**: 마이크/스피커 스트리밍
+- ✅ **적응형 품질**: 연결된 피어 수에 따른 자동 품질 조정
+
+### 사용 방법
+
+#### 1:1 연결 (기존 방식)
+- WebRtcManager 사용
+- VrStreamSender + VrTouchReceiver 컴포넌트
+
+#### 1:N 연결 (새로운 방식)
+- MultiPeerWebRtcManager 사용
+- VrMRStreamSender + VrMultiTouchReceiver 컴포넌트
+- 시그널링 서버가 1:N 연결 자동 관리
+
 ## 🚧 향후 개발 계획
 
 ### 우선순위 높음
-- 오디오 스트리밍 지원
-- AR 모드 (Quest 3 패스스루)
+- RemoveTrack 기능 구현
+- 동적 피어 추가/제거 최적화
 
 ### 중간 우선순위  
-- RemoveTrack 기능 구현
-- 1:N 연결 지원
+- 피어별 권한 관리
+- 선택적 스트리밍 (특정 피어에게만)
 
 ### 장기 계획
 - 성능 최적화 (Fixed Foveated Rendering)
-- 동적 해상도 조정
 - 클라우드 렌더링 지원
+- WebRTC Simulcast 지원
 
 ## 📄 라이선스
 
