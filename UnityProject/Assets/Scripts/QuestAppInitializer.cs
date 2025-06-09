@@ -256,7 +256,7 @@ namespace UnityVerseBridge.QuestApp
             {
                 if (type == "peer-joined")
                 {
-                    var peerInfo = JsonUtility.FromJson<PeerJoinedMessage>(jsonData);
+                    var peerInfo = JsonUtility.FromJson<UnityVerseBridge.Core.Signaling.Messages.PeerJoinedMessage>(jsonData);
                     if (peerInfo.clientType == "mobile")
                     {
                         Debug.Log($"[QuestAppInitializer] Mobile peer joined: {peerInfo.peerId}");

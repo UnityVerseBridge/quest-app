@@ -71,7 +71,7 @@ namespace UnityVerseBridge.QuestApp.Test
             UpdateUI(); // 초기 UI 상태 설정
             
             // QuestAppInitializer가 이미 연결을 처리하고 있는지 확인
-            var initializer = FindObjectOfType<QuestAppInitializer>();
+            var initializer = FindFirstObjectByType<QuestAppInitializer>();
             if (initializer != null && initializer.enabled)
             {
                 isInitializerHandlingConnection = true;
