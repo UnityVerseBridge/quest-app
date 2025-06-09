@@ -545,6 +545,8 @@ GameObject:
   m_Component:
   - component: {fileID: 363749156}
   - component: {fileID: 363749155}
+  - component: {fileID: 363749157}
+  - component: {fileID: 363749158}
   m_Layer: 0
   m_Name: QuestAppInitializer
   m_TagString: Untagged
@@ -590,6 +592,39 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &363749157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 363749154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2446a9ce7f575b44c8547777fa411937, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioStreamManager: {fileID: 363749158}
+--- !u!114 &363749158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 363749154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5738cb205c809646bfe6bb5d65e28f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  webRtcManager: {fileID: 894001655}
+  enableMicrophone: 1
+  enableSpeaker: 1
+  sampleRate: 48000
+  microphoneVolume: 1
+  speakerVolume: 1
+  preferredMicrophoneName: 
+  recordingBufferLength: 1
 --- !u!1 &376973003 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8503454745417635347, guid: b6d57cedc6a73c94aad8ce006a26b41b, type: 3}

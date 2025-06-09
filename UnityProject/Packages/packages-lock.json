@@ -487,14 +487,13 @@
       "url": "https://packages.unity.com"
     },
     "com.unityversebridge.core": {
-      "version": "https://github.com/UnityVerseBridge/core.git",
+      "version": "file:../../../core",
       "depth": 0,
-      "source": "git",
+      "source": "local",
       "dependencies": {
         "com.unity.webrtc": "3.0.0-pre.8",
         "com.unity.test-framework": "1.4.6"
-      },
-      "hash": "297180d1503e3af68a67589f7da32819afcefc9d"
+      }
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
