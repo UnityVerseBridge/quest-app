@@ -62,13 +62,25 @@ namespace UnityVerseBridge.QuestApp
             else
             {
                 Debug.Log($"[VrStreamSender] sourceRenderTexture가 Inspector에서 할당됨: {sourceRenderTexture.name}, Size: {sourceRenderTexture.width}x{sourceRenderTexture.height}, Created: {sourceRenderTexture.IsCreated()}");
+                
+                // Inspector에서 할당된 RenderTexture의 설정 확인
+                if (sourceRenderTexture.format != RenderTextureFormat.BGRA32)
+                {
+                    Debug.LogWarning($"[VrStreamSender] RenderTexture format is {sourceRenderTexture.format}, but BGRA32 is recommended for WebRTC streaming.");
+                }
             }
             
             // 반드시 RenderTexture가 생성되고 초기화되었는지 확인
             if (!sourceRenderTexture.IsCreated())
             {
                 Debug.LogWarning($"[VrStreamSender] sourceRenderTexture ({sourceRenderTexture.name})가 생성되지 않아 Create()를 호출합니다.");
-                sourceRenderTexture.Create();
+                bool created = sourceRenderTexture.Create();
+                if (!created)
+                {
+                    Debug.LogError("[VrStreamSender] Failed to create RenderTexture! This might be due to unsupported format or dimensions.");
+                    enabled = false;
+                    return;
+                }
             }
 
 

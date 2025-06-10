@@ -746,6 +746,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   webRtcManager: {fileID: 894001655}
+  enableButtonHaptics: 1
+  enableTriggerHaptics: 1
+  enableGripHaptics: 1
+  enableHandTrackingHaptics: 1
+  enableCollisionHaptics: 1
+  debugMode: 1
 --- !u!1 &593050027 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7752563439712129205, guid: 66d40221d132d04499855da9ce315f20, type: 3}
@@ -1318,7 +1324,7 @@ MonoBehaviour:
       - stun:stun.l.google.com:19302
       username: 
     dataChannelLabel: data-channel
-  signalingServerUrl: ws://localhost:8080
+  signalingServerUrl: ws://1.219.187.87:9090
   isOfferer: 1
   autoStartPeerConnection: 0
   _isSignalingConnected: 0
@@ -2649,7 +2655,7 @@ MonoBehaviour:
   disconnectButton: {fileID: 804509309}
   sendTestMessageButton: {fileID: 0}
   serverUrlInput: {fileID: 0}
-  defaultServerUrl: ws://localhost:8080
+  defaultServerUrl: ws://1.219.187.87:9090
   testRenderTexture: {fileID: 8400000, guid: 7adae489c4132f544bad482b99b37996, type: 2}
   autoConnectOnStartByTester: 1
 --- !u!4 &1662758094

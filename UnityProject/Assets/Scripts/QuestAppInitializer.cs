@@ -166,15 +166,24 @@ namespace UnityVerseBridge.QuestApp
                     signalingClient.OnSignalingMessageReceived += HandleSignalingMessage;
                     
                     // Wait for mobile peer
+                    // Create PeerConnection immediately after registration for Offerer
+                    if (webRtcManager != null)
+                    {
+                        Debug.Log("[QuestAppInitializer] Creating PeerConnection immediately after registration...");
+                        await Task.Delay(500); // Wait for signaling to stabilize
+                        webRtcManager.CreatePeerConnection();
+                        webRtcManager.CreateDataChannel();
+                        Debug.Log("[QuestAppInitializer] PeerConnection and DataChannel created. Waiting for mobile peer...");
+                    }
+                    
                     await WaitForMobilePeer();
                     
                     if (hasMobilePeer && webRtcManager != null)
                     {
-                    Debug.Log("[QuestAppInitializer] Mobile peer joined. Starting PeerConnection...");
-                    // Wait a bit to ensure signaling is stable
-                        await Task.Delay(500);
-                webRtcManager.StartPeerConnection();
-            }
+                        Debug.Log("[QuestAppInitializer] Mobile peer joined. Creating offer...");
+                        // Now create the offer
+                        webRtcManager.StartNegotiation();
+                    }
                     
                     break; // Success
                 }
