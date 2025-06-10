@@ -3,6 +3,10 @@ using UnityVerseBridge.Core; // WebRtcManager 사용
 using UnityVerseBridge.Core.DataChannel.Data; // 데이터 구조 사용
 using System; // Exception 사용
 using TouchPhase = UnityVerseBridge.Core.DataChannel.Data.TouchPhase; // 명시적 타입 지정
+using UnityEngine.EventSystems; // UI 이벤트 시스템
+#if UNITY_XR_INTERACTION_TOOLKIT
+using UnityEngine.XR.Interaction.Toolkit; // XR Interaction
+#endif
 
 namespace UnityVerseBridge.QuestApp
 {
@@ -95,33 +99,52 @@ namespace UnityVerseBridge.QuestApp
                 }
             }
 
-            // 정규화된 좌표를 스크린 좌표로 변환
-            Vector3 screenPos = new Vector3(
-                data.positionX * Screen.width,
-                data.positionY * Screen.height,
-                0f
-            );
-
-            // 스크린 좌표를 월드 좌표로 변환 (레이캐스트)
-            Ray ray = vrCamera.ScreenPointToRay(screenPos);
+            // 정규화된 좌표를 뷰포트 좌표로 사용 (0-1 범위)
+            Vector3 viewportPos = new Vector3(data.positionX, data.positionY, 0f);
+            
+            // 뷰포트 좌표를 월드 좌표로 변환
+            Ray ray = vrCamera.ViewportPointToRay(viewportPos);
             RaycastHit hit;
+            
+            Debug.Log($"[VrTouchReceiver] Ray origin: {ray.origin}, direction: {ray.direction}");
             
             Vector3 worldPos;
             if (Physics.Raycast(ray, out hit, touchRayDistance))
             {
                 worldPos = hit.point;
-                Debug.Log($"[VrTouchReceiver] Touch hit at: {worldPos}, Object: {hit.collider.gameObject.name}");
+                Debug.Log($"[VrTouchReceiver] Touch hit at: {worldPos}, Object: {hit.collider.gameObject.name}, Layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
                 
-                // UI 오브젝트인 경우 클릭 이벤트 발생
-                if (hit.collider.GetComponent<UnityEngine.UI.Button>() != null)
+                // TouchPhase.Ended일 때만 클릭 처리
+                if (data.phase == TouchPhase.Ended)
                 {
-                    hit.collider.GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+                    #if UNITY_XR_INTERACTION_TOOLKIT
+                    // XR Interactable 처리
+                    var xrInteractable = hit.collider.GetComponent<XRBaseInteractable>();
+                    if (xrInteractable != null)
+                    {
+                        Debug.Log($"[VrTouchReceiver] XR Interactable clicked: {xrInteractable.name}");
+                        // XR 상호작용 시뮬레이션
+                        xrInteractable.OnActivated(new ActivateEventArgs());
+                    }
+                    #endif
+                    
+                    // UI 버튼 처리 (World Space Canvas)
+                    var button = hit.collider.GetComponent<UnityEngine.UI.Button>();
+                    if (button != null)
+                    {
+                        Debug.Log($"[VrTouchReceiver] UI Button clicked: {button.name}");
+                        button.onClick.Invoke();
+                    }
+                    
+                    // 3D 오브젝트 클릭 이벤트 (커스텀 처리)
+                    hit.collider.SendMessage("OnVRClick", SendMessageOptions.DontRequireReceiver);
                 }
             }
             else
             {
                 // 레이캐스트가 실패하면 카메라 전방 일정 거리에 위치
                 worldPos = ray.origin + ray.direction * touchRayDistance;
+                Debug.Log($"[VrTouchReceiver] No hit, using forward position: {worldPos}");
             }
 
             // 터치 상태에 따른 처리
