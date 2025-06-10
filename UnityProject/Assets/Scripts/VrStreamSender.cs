@@ -50,41 +50,26 @@ namespace UnityVerseBridge.QuestApp
             }
 
             
-            // RenderTexture 생성 또는 확인
+            // Quest 디바이스에서 호환되는 RenderTexture 확보
             if (sourceRenderTexture == null)
             {
-                Debug.LogWarning("[VrStreamSender] sourceRenderTexture가 Inspector에서 할당되지 않아 자동 생성합니다 (1280x720).");
-                // WebRTC 스트리밍을 위해 BGRA32 포맷 사용
-                sourceRenderTexture = new RenderTexture(1280, 720, 24, RenderTextureFormat.BGRA32, RenderTextureReadWrite.Default);
-                sourceRenderTexture.name = "StreamRenderTexture_AutoCreated";
-                sourceRenderTexture.antiAliasing = 1;
-                sourceRenderTexture.filterMode = FilterMode.Bilinear;
-                sourceRenderTexture.Create(); // 생성 후 바로 Create()
-                Debug.Log($"[VrStreamSender] Created RenderTexture: {sourceRenderTexture.width}x{sourceRenderTexture.height}, Format: {sourceRenderTexture.format}");
+                Debug.LogWarning("[VrStreamSender] sourceRenderTexture가 Inspector에서 할당되지 않아 Quest 호환 텍스처를 생성합니다.");
+                sourceRenderTexture = QuestRenderTextureHelper.CreateCompatibleRenderTexture(1280, 720, "StreamRenderTexture_AutoCreated");
             }
             else
             {
-                Debug.Log($"[VrStreamSender] sourceRenderTexture가 Inspector에서 할당됨: {sourceRenderTexture.name}, Size: {sourceRenderTexture.width}x{sourceRenderTexture.height}, Created: {sourceRenderTexture.IsCreated()}");
-                
-                // Inspector에서 할당된 RenderTexture의 설정 확인
-                if (sourceRenderTexture.format != RenderTextureFormat.BGRA32)
-                {
-                    Debug.LogWarning($"[VrStreamSender] RenderTexture format is {sourceRenderTexture.format}, but BGRA32 is recommended for WebRTC streaming.");
-                }
+                Debug.Log($"[VrStreamSender] sourceRenderTexture 호환성 확인: {sourceRenderTexture.name}");
+                sourceRenderTexture = QuestRenderTextureHelper.EnsureCompatibility(sourceRenderTexture, sourceRenderTexture.width, sourceRenderTexture.height);
             }
             
-            // 반드시 RenderTexture가 생성되고 초기화되었는지 확인
-            if (!sourceRenderTexture.IsCreated())
+            if (sourceRenderTexture == null || !sourceRenderTexture.IsCreated())
             {
-                Debug.LogWarning($"[VrStreamSender] sourceRenderTexture ({sourceRenderTexture.name})가 생성되지 않아 Create()를 호출합니다.");
-                bool created = sourceRenderTexture.Create();
-                if (!created)
-                {
-                    Debug.LogError("[VrStreamSender] Failed to create RenderTexture! This might be due to unsupported format or dimensions.");
-                    enabled = false;
-                    return;
-                }
+                Debug.LogError("[VrStreamSender] Failed to create Quest-compatible RenderTexture!");
+                enabled = false;
+                return;
             }
+            
+            Debug.Log($"[VrStreamSender] Using RenderTexture: {sourceRenderTexture.name}, Size: {sourceRenderTexture.width}x{sourceRenderTexture.height}, Format: {sourceRenderTexture.format}, Created: {sourceRenderTexture.IsCreated()}");
 
 
             // 게임 뷰 표시 여부에 따라 다른 설정

@@ -2,8 +2,8 @@
   "dependencies": {
     "com.boxqkrtm.ide.cursor": "https://github.com/boxqkrtm/com.unity.ide.cursor.git",
     "com.justinpbarnett.unity-mcp": "https://github.com/justinpbarnett/unity-mcp.git?path=/UnityMcpBridge",
-    "com.meta.xr.sdk.all": "76.0.1",
-    "com.meta.xr.sdk.core": "76.0.0",
+    "com.meta.xr.sdk.all": "77.0.0",
+    "com.meta.xr.sdk.core": "77.0.0",
     "com.meta.xr.sdk.haptics": "76.0.0",
     "com.unity.collab-proxy": "2.7.1",
     "com.unity.device-simulator.devices": "1.0.0",

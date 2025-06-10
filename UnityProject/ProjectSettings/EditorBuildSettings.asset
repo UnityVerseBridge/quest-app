@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Samples/Meta XR Core SDK/77.0.0/Mixed Reality Sample/MixedReality.unity
+    guid: fc8cf684948f0654f9bb46acfbba709e
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 55daccc09a3b69647bbab145b54a3ab3
   m_configObjects:
