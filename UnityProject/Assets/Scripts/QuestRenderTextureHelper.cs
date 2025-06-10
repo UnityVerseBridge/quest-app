@@ -27,14 +27,13 @@ namespace UnityVerseBridge.QuestApp
                 }
             }
             
-            // RenderTexture 생성
+            // RenderTexture 생성 (depth parameter는 생성자에서 설정)
             var rt = new RenderTexture(width, height, 0, format)
             {
                 name = name,
                 useMipMap = false,
                 autoGenerateMips = false,
                 antiAliasing = 1,
-                depthBufferBits = 0,
                 enableRandomWrite = false,
                 useDynamicScale = false,
                 vrUsage = VRTextureUsage.None, // VR 용도로 사용하지 않음 (스트리밍용)
@@ -49,10 +48,10 @@ namespace UnityVerseBridge.QuestApp
                 return null;
             }
             
-            // Linear 색상 공간 확인
+            // 색상 공간 정보 로그 (sRGB는 읽기 전용 속성)
             if (QualitySettings.activeColorSpace == ColorSpace.Linear)
             {
-                rt.sRGB = false; // Linear space에서는 sRGB 변환 비활성화
+                Debug.Log($"[QuestRenderTextureHelper] Using Linear color space, sRGB: {rt.sRGB}");
             }
             
             Debug.Log($"[QuestRenderTextureHelper] Created RenderTexture: {name}, Size: {width}x{height}, Format: {format}, GraphicsAPI: {SystemInfo.graphicsDeviceType}");
