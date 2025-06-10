@@ -1,5 +1,6 @@
 using System; // Exception 클래스 사용을 위해 추가
 using System.Collections;
+using System.Linq; // LINQ for codec enumeration
 using UnityEngine;
 using Unity.WebRTC; // VideoStreamTrack 사용
 using UnityVerseBridge.Core; // WebRtcManager 사용
@@ -188,6 +189,23 @@ namespace UnityVerseBridge.QuestApp
             }
         }
         
+        void Update()
+        {
+            // 스트리밍 상태 주기적 체크 (1초마다)
+            if (Time.frameCount % 60 == 0 && videoStreamTrack != null)
+            {
+                Debug.Log($"[VrStreamSender] Stream check - Track: {videoStreamTrack.Enabled}, RT: {sourceRenderTexture?.IsCreated()}, PC: {webRtcManager.GetPeerConnectionState()}");
+                
+                // Quest 디바이스에서 추가 디버그
+                #if UNITY_ANDROID && !UNITY_EDITOR
+                if (mirrorCamera != null)
+                {
+                    Debug.Log($"[VrStreamSender] Mirror cam enabled: {mirrorCamera.enabled}, Target RT: {mirrorCamera.targetTexture != null}");
+                }
+                #endif
+            }
+        }
+        
         void OnDestroy()
         {
             // 이벤트 구독 해지 및 트랙 정리
@@ -260,6 +278,12 @@ namespace UnityVerseBridge.QuestApp
                 var gfxType = SystemInfo.graphicsDeviceType;
                 var supportedFormat = WebRTC.GetSupportedRenderTextureFormat(gfxType);
                 Debug.Log($"[VrStreamSender] Graphics API: {gfxType}, Supported format: {supportedFormat}");
+                
+                // Quest 디바이스용 코덱 설정
+                #if UNITY_ANDROID && !UNITY_EDITOR
+                var capabilities = RTCRtpSender.GetCapabilities(TrackKind.Video);
+                Debug.Log($"[VrStreamSender] Available video codecs: {string.Join(", ", capabilities.codecs.Select(c => c.mimeType))}");
+                #endif
                 
                 videoStreamTrack = new VideoStreamTrack(sourceRenderTexture);
                 Debug.Log($"[VrStreamSender] VideoStreamTrack created successfully. Track ID: {videoStreamTrack.Id}");
