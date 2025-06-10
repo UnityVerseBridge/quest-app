@@ -131,6 +131,10 @@ namespace UnityVerseBridge.QuestApp
             // 스트리밍을 위한 설정 오버라이드
             mirrorCamera.targetTexture = sourceRenderTexture; // 미러 카메라는 RenderTexture로 출력
             
+            // URP 호환성을 위한 추가 설정
+            mirrorCamera.allowHDR = false; // HDR은 WebRTC 스트리밍에 불필요
+            mirrorCamera.allowMSAA = false; // MSAA는 RenderTexture에서 별도 설정
+            
             // 렌더링 순서 설정 (URP/Built-in 모두 지원)
             // 미러 카메라를 먼저 렌더링하여 RenderTexture에 저장
             mirrorCamera.depth = targetCamera.depth - 1; 
@@ -138,6 +142,8 @@ namespace UnityVerseBridge.QuestApp
             
             // 원본 카메라는 VR 헤드셋에 직접 렌더링
             targetCamera.targetTexture = null;
+            
+            Debug.Log($"[VrStreamSender] Mirror camera created with RenderTexture depth: {sourceRenderTexture.depth}, format: {sourceRenderTexture.depthStencilFormat}");
 
 
         }

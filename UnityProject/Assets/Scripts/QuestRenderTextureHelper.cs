@@ -27,8 +27,8 @@ namespace UnityVerseBridge.QuestApp
                 }
             }
             
-            // RenderTexture 생성 (depth parameter는 생성자에서 설정)
-            var rt = new RenderTexture(width, height, 0, format)
+            // RenderTexture 생성 - URP는 depth buffer가 필요함
+            var rt = new RenderTexture(width, height, 24, format) // 24-bit depth buffer 추가
             {
                 name = name,
                 useMipMap = false,
@@ -38,7 +38,8 @@ namespace UnityVerseBridge.QuestApp
                 useDynamicScale = false,
                 vrUsage = VRTextureUsage.None, // VR 용도로 사용하지 않음 (스트리밍용)
                 filterMode = FilterMode.Bilinear,
-                wrapMode = TextureWrapMode.Clamp
+                wrapMode = TextureWrapMode.Clamp,
+                depthStencilFormat = UnityEngine.Experimental.Rendering.GraphicsFormat.D24_UNorm_S8_UInt // URP 요구사항
             };
             
             // 즉시 생성
@@ -80,6 +81,11 @@ namespace UnityVerseBridge.QuestApp
             else if (existing.width != width || existing.height != height)
             {
                 Debug.Log($"[QuestRenderTextureHelper] Size mismatch, recreating...");
+                needsRecreation = true;
+            }
+            else if (existing.depth == 0) // URP requires depth buffer
+            {
+                Debug.Log($"[QuestRenderTextureHelper] No depth buffer, recreating for URP compatibility...");
                 needsRecreation = true;
             }
             else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan && 
