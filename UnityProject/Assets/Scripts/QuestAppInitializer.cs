@@ -304,6 +304,21 @@ namespace UnityVerseBridge.QuestApp
                 {
                     var error = JsonUtility.FromJson<ErrorMessage>(jsonData);
                     Debug.LogError($"[QuestAppInitializer] Server error: {error.error} (context: {error.context})");
+                    
+                    // "Room already has a host" 에러 처리
+                    if (error.error != null && error.error.Contains("Room already has a host"))
+                    {
+                        Debug.LogWarning("[QuestAppInitializer] Room already has a host. Disconnecting and retrying with new room ID...");
+                        
+                        // 현재 연결 종료
+                        DisconnectAndCleanup();
+                        
+                        // 세션 room ID 재설정
+                        connectionConfig.ResetSessionRoomId();
+                        
+                        // 재연결 시도
+                        StartCoroutine(RetryConnectionWithNewRoom());
+                    }
                 }
             }
             catch (Exception ex)
@@ -346,13 +361,52 @@ namespace UnityVerseBridge.QuestApp
 
         void OnDestroy()
         {
+            DisconnectAndCleanup();
+        }
+        
+        private void DisconnectAndCleanup()
+        {
+            Debug.Log("[QuestAppInitializer] Disconnecting and cleaning up...");
+            
             if (signalingClient != null)
             {
                 signalingClient.OnSignalingMessageReceived -= HandleSignalingMessage;
             }
             
-            // Note: In newer Unity WebRTC versions, explicit Dispose() is not needed
-            // Resources are cleaned up automatically
+            if (webRtcManager != null)
+            {
+                webRtcManager.Disconnect();
+            }
+            
+            if (signalingClient != null)
+            {
+                signalingClient.Dispose();
+                signalingClient = null;
+            }
+            
+            if (webSocketAdapter != null)
+            {
+                var closeTask = webSocketAdapter.CloseAsync();
+                if (!closeTask.Wait(1000))
+                {
+                    Debug.LogWarning("[QuestAppInitializer] WebSocket close timeout");
+                }
+                webSocketAdapter = null;
+            }
+            
+            hasMobilePeer = false;
+            mobilePeerJoined = false;
+        }
+        
+        private IEnumerator RetryConnectionWithNewRoom()
+        {
+            Debug.Log("[QuestAppInitializer] Waiting before retry...");
+            yield return new WaitForSeconds(2f);
+            
+            Debug.Log($"[QuestAppInitializer] Retrying with new room ID: {connectionConfig.GetRoomId()}");
+            
+            // 재초기화
+            InitializeApp();
         }
     }
 }
