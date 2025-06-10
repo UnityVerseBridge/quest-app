@@ -180,9 +180,9 @@ namespace UnityVerseBridge.QuestApp
                     
                     if (hasMobilePeer && webRtcManager != null)
                     {
-                        Debug.Log("[QuestAppInitializer] Mobile peer joined. Creating offer...");
-                        // Now create the offer
-                        webRtcManager.StartNegotiation();
+                        Debug.Log("[QuestAppInitializer] Mobile peer joined. Waiting for video track to be added before creating offer...");
+                        // Don't create offer immediately - wait for video track to be added
+                        // The negotiation will be triggered automatically when tracks are added
                     }
                     
                     break; // Success
@@ -270,6 +270,22 @@ namespace UnityVerseBridge.QuestApp
                     {
                         Debug.Log($"[QuestAppInitializer] Mobile peer joined: {peerInfo.peerId}");
                         hasMobilePeer = true;
+                        
+                        // Trigger negotiation if we have tracks ready
+                        if (webRtcManager != null && webRtcManager.GetPeerConnectionState() == RTCPeerConnectionState.New)
+                        {
+                            // Give the VrStreamSender a chance to add tracks
+                            StartCoroutine(TriggerNegotiationAfterDelay());
+                        }
+                    }
+                }
+                else if (type == "client-ready")
+                {
+                    Debug.Log($"[QuestAppInitializer] Client ready message received: {jsonData}");
+                    // Mobile client is ready, we can now safely negotiate if needed
+                    if (hasMobilePeer && webRtcManager != null)
+                    {
+                        StartCoroutine(TriggerNegotiationAfterDelay());
                     }
                 }
                 else if (type == "error")
@@ -281,6 +297,18 @@ namespace UnityVerseBridge.QuestApp
             catch (Exception ex)
             {
                 Debug.LogError($"[QuestAppInitializer] Failed to handle message: {ex.Message}");
+            }
+        }
+        
+        private IEnumerator TriggerNegotiationAfterDelay()
+        {
+            // Wait a bit for tracks to be added
+            yield return new WaitForSeconds(1.0f);
+            
+            if (webRtcManager != null && webRtcManager.GetPeerConnectionState() == RTCPeerConnectionState.New)
+            {
+                Debug.Log("[QuestAppInitializer] Triggering negotiation after mobile peer is ready...");
+                webRtcManager.StartNegotiation();
             }
         }
         

@@ -53,11 +53,13 @@ namespace UnityVerseBridge.QuestApp
             if (sourceRenderTexture == null)
             {
                 Debug.LogWarning("[VrStreamSender] sourceRenderTexture가 Inspector에서 할당되지 않아 자동 생성합니다 (1280x720).");
-                // WebRTC 스트리밍을 위해 B8G8R8A8_SRGB 포맷 사용
-                // B8G8R8A8_SRGB 포맷 사용 (Unity의 BGRA32 + sRGB 설정)
-                sourceRenderTexture = new RenderTexture(1280, 720, 24, RenderTextureFormat.BGRA32, RenderTextureReadWrite.sRGB);
+                // WebRTC 스트리밍을 위해 BGRA32 포맷 사용
+                sourceRenderTexture = new RenderTexture(1280, 720, 24, RenderTextureFormat.BGRA32, RenderTextureReadWrite.Default);
                 sourceRenderTexture.name = "StreamRenderTexture_AutoCreated";
+                sourceRenderTexture.antiAliasing = 1;
+                sourceRenderTexture.filterMode = FilterMode.Bilinear;
                 sourceRenderTexture.Create(); // 생성 후 바로 Create()
+                Debug.Log($"[VrStreamSender] Created RenderTexture: {sourceRenderTexture.width}x{sourceRenderTexture.height}, Format: {sourceRenderTexture.format}");
             }
             else
             {
@@ -106,6 +108,9 @@ namespace UnityVerseBridge.QuestApp
             
             // WebRTC 연결 성공 이벤트 구독
             webRtcManager.OnWebRtcConnected += StartStreaming;
+            
+            // Check if we should add video track immediately (if peer connection exists)
+            StartCoroutine(CheckAndAddVideoTrackEarly());
         }
         
         /// <summary>
@@ -172,6 +177,25 @@ namespace UnityVerseBridge.QuestApp
         }
         */
 
+        private IEnumerator CheckAndAddVideoTrackEarly()
+        {
+            // Wait a bit for initialization
+            yield return new WaitForSeconds(2.0f);
+            
+            // Check if peer connection exists but we haven't added track yet
+            if (webRtcManager != null && !trackAdded)
+            {
+                var pcState = webRtcManager.GetPeerConnectionState();
+                Debug.Log($"[VrStreamSender] Checking if we should add video track early. PC State: {pcState}");
+                
+                if (pcState == RTCPeerConnectionState.New || pcState == RTCPeerConnectionState.Connecting)
+                {
+                    Debug.Log("[VrStreamSender] Adding video track early to trigger negotiation...");
+                    AddVideoTrack();
+                }
+            }
+        }
+        
         void OnDestroy()
         {
             // 이벤트 구독 해지 및 트랙 정리
@@ -214,6 +238,17 @@ namespace UnityVerseBridge.QuestApp
             
             // Wait a bit for initial negotiation to complete
             await System.Threading.Tasks.Task.Delay(1000);
+            
+            AddVideoTrack();
+        }
+        
+        private void AddVideoTrack()
+        {
+            if (trackAdded)
+            {
+                Debug.LogWarning("[VrStreamSender] Video track already added.");
+                return;
+            }
 
             if (sourceRenderTexture == null)
             {
@@ -236,9 +271,6 @@ namespace UnityVerseBridge.QuestApp
                 
                 videoStreamTrack = new VideoStreamTrack(sourceRenderTexture);
                 Debug.Log($"[VrStreamSender] VideoStreamTrack created successfully. Track ID: {videoStreamTrack.Id}");
-                
-                // Wait a bit for encoder to be ready (Unity WebRTC internal initialization)
-                await System.Threading.Tasks.Task.Delay(500);
                 
                 // Check if track is enabled
                 if (!videoStreamTrack.Enabled)
@@ -263,7 +295,7 @@ namespace UnityVerseBridge.QuestApp
             {
                 webRtcManager.AddVideoTrack(videoStreamTrack);
                 trackAdded = true;
-                Debug.Log("[VrStreamSender] Video track added to WebRTC connection");
+                Debug.Log("[VrStreamSender] Video track added to WebRTC connection - this should trigger negotiation");
             }
             catch (Exception e)
             {
