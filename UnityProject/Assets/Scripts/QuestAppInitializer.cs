@@ -18,6 +18,7 @@ namespace UnityVerseBridge.QuestApp
         private SystemWebSocketAdapter webSocketAdapter;
         private SignalingClient signalingClient;
         private bool hasMobilePeer = false;
+        private bool mobilePeerJoined = false;
 
         [Header("Dependencies")]
         [SerializeField] private WebRtcManager webRtcManager;
