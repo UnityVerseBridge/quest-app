@@ -270,6 +270,7 @@ namespace UnityVerseBridge.QuestApp
                     {
                         Debug.Log($"[QuestAppInitializer] Mobile peer joined: {peerInfo.peerId}");
                         hasMobilePeer = true;
+                        mobilePeerJoined = true;  // Set this flag!
                         
                         // Trigger negotiation if we have tracks ready
                         if (webRtcManager != null && webRtcManager.GetPeerConnectionState() == RTCPeerConnectionState.New)
@@ -282,10 +283,20 @@ namespace UnityVerseBridge.QuestApp
                 else if (type == "client-ready")
                 {
                     Debug.Log($"[QuestAppInitializer] Client ready message received: {jsonData}");
-                    // Mobile client is ready, we can now safely negotiate if needed
-                    if (hasMobilePeer && webRtcManager != null)
+                    mobilePeerJoined = true;  // Set this flag too!
+                    hasMobilePeer = true;
+                    
+                    // Mobile client is ready, trigger negotiation now
+                    if (webRtcManager != null)
                     {
-                        StartCoroutine(TriggerNegotiationAfterDelay());
+                        var state = webRtcManager.GetPeerConnectionState();
+                        Debug.Log($"[QuestAppInitializer] PeerConnection state: {state}");
+                        
+                        // If negotiation is needed, start it
+                        if (state != RTCPeerConnectionState.Closed && state != RTCPeerConnectionState.Failed)
+                        {
+                            StartCoroutine(TriggerNegotiationAfterDelay());
+                        }
                     }
                 }
                 else if (type == "error")
@@ -305,10 +316,17 @@ namespace UnityVerseBridge.QuestApp
             // Wait a bit for tracks to be added
             yield return new WaitForSeconds(1.0f);
             
-            if (webRtcManager != null && webRtcManager.GetPeerConnectionState() == RTCPeerConnectionState.New)
+            if (webRtcManager != null)
             {
-                Debug.Log("[QuestAppInitializer] Triggering negotiation after mobile peer is ready...");
-                webRtcManager.StartNegotiation();
+                var state = webRtcManager.GetPeerConnectionState();
+                Debug.Log($"[QuestAppInitializer] Checking if negotiation is needed. PC State: {state}, isNegotiating: {webRtcManager.IsNegotiating}");
+                
+                // Start negotiation if we're not already negotiating
+                if (!webRtcManager.IsNegotiating && state != RTCPeerConnectionState.Closed && state != RTCPeerConnectionState.Failed)
+                {
+                    Debug.Log("[QuestAppInitializer] Starting negotiation after mobile peer is ready...");
+                    webRtcManager.StartNegotiation();
+                }
             }
         }
         
