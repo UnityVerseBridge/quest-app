@@ -200,6 +200,9 @@ sysinfo.txt
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# Unity temporary build files (Unity 6+)
+.utmp/
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
