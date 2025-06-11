@@ -249,3 +249,10 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,unity,visualstudiocode,rider
+# Connection Configuration files
+*ConnectionConfig.asset
+*ConnectionConfig.asset.meta
+
+# WebRTC Configuration files
+*WebRtcConfig*.asset
+*WebRtcConfig*.asset.meta

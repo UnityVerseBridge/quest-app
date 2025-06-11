@@ -540,57 +540,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 482130, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
   m_PrefabInstance: {fileID: 438170767}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &444379299
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 444379300}
-  - component: {fileID: 444379301}
-  m_Layer: 0
-  m_Name: VrHapticRequester
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &444379300
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 444379299}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1906049849}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &444379301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 444379299}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97c97271932d5104b82c8ea303932e41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  webRtcManager: {fileID: 0}
-  enableButtonHaptics: 1
-  enableTriggerHaptics: 1
-  enableGripHaptics: 1
-  enableHandTrackingHaptics: 1
-  enableCollisionHaptics: 1
-  debugMode: 1
 --- !u!1001 &500659402
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1687,65 +1636,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1408818524
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1408818526}
-  - component: {fileID: 1408818527}
-  m_Layer: 0
-  m_Name: WebRTCManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1408818526
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1408818524}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1408818527
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1408818524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 123456789abcdef0123456789abcdef0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  configuration:
-    iceServers:
-    - credential: 
-      credentialType: 0
-      urls:
-      - stun:stun.l.google.com:19302
-      username: 
-    dataChannelLabel: sendChannel
-  signalingServerUrl: ws://1.219.187.87:9090
-  maxConnections: 5
-  peerRole: 0
-  roomId: default-room
-  _isSignalingConnected: 0
-  _activeConnectionsCount: 0
-  _connectedPeerIds: []
 --- !u!1001 &1432556347
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2137,54 +2027,75 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1788718839
-GameObject:
+--- !u!1001 &1660228840
+PrefabInstance:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1788718840}
-  - component: {fileID: 1788718841}
-  m_Layer: 0
-  m_Name: VrTouchReceiver
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1788718840
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1788718839}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1906049849}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1788718841
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1788718839}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d13220af0f186a64d8ee87f05638929f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  webRtcManagerBehaviour: {fileID: 1408818527}
-  vrCamera: {fileID: 1018127217}
-  touchRayDistance: 1.5
-  touchPointerPrefab: {fileID: 8343167407413159200, guid: d56cf1aacbea4704cac4d7983df1a0ad, type: 3}
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2007896027796547223, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007896027796547223, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007896027796547223, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007896027796547223, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007896027796547223, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007896027796547223, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007896027796547223, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007896027796547223, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007896027796547223, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2007896027796547223, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3385977311238389186, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: m_Name
+      value: UnityVerseBridge_Quest
+      objectReference: {fileID: 0}
+    - target: {fileID: 5297390358179131715, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: streamCamera
+      value: 
+      objectReference: {fileID: 1018127217}
+    - target: {fileID: 5710706869444935395, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: webRtcConfiguration
+      value: 
+      objectReference: {fileID: 11400000, guid: 4cb55756405444e3397b58c81ecfc16a, type: 2}
+    - target: {fileID: 7059617104775752510, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
+      propertyPath: vrCamera
+      value: 
+      objectReference: {fileID: 1018127217}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
 --- !u!1001 &1845717338
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2266,96 +2177,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9809c5e8418bb047bf2c8ba1d1a2cec, type: 3}
---- !u!1 &1854854621
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1854854625}
-  - component: {fileID: 1854854624}
-  - component: {fileID: 1854854623}
-  - component: {fileID: 1854854622}
-  m_Layer: 0
-  m_Name: QuestAppInitializer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1854854622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1854854621}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5738cb205c809646bfe6bb5d65e28f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  webRtcManager: {fileID: 0}
-  enableMicrophone: 1
-  enableSpeaker: 1
-  sampleRate: 48000
-  microphoneVolume: 1
-  speakerVolume: 1
-  preferredMicrophoneName: 
-  recordingBufferLength: 1
---- !u!114 &1854854623
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1854854621}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2446a9ce7f575b44c8547777fa411937, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioStreamManager: {fileID: 1854854622}
---- !u!114 &1854854624
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1854854621}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe4d792f72284af40ac9b190ff482dd1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  webRtcManagerBehaviour: {fileID: 1408818527}
-  connectionConfig: {fileID: 11400000, guid: 148e18c633241364e952a981cac6e079, type: 2}
-  webRtcConfiguration:
-    iceServers:
-    - credential: 
-      credentialType: 0
-      urls:
-      - stun:stun.l.google.com:19302
-      username: 
-    dataChannelLabel: data-channel
-  autoConnectOnStart: 1
---- !u!4 &1854854625
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1854854621}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1895352690 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114428879332287356, guid: 835e735ca71bf78459fb2cababd74112, type: 3}
@@ -2383,40 +2204,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cc5c234723e3a54d8dd09b131117743, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1906049848
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1906049849}
-  m_Layer: 0
-  m_Name: VrComponents
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1906049849
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1906049848}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2132446406}
-  - {fileID: 1788718840}
-  - {fileID: 444379300}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1913527098
 GameObject:
   m_ObjectHideFlags: 0
@@ -2640,55 +2427,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -100}
   m_SizeDelta: {x: 600, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &2132446405
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2132446406}
-  - component: {fileID: 2132446407}
-  m_Layer: 0
-  m_Name: VrStreamSender
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2132446406
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2132446405}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1906049849}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2132446407
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2132446405}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95e4d74188bb97b49a37a272a5424cea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  webRtcManagerBehaviour: {fileID: 1408818527}
-  sourceRenderTexture: {fileID: 8400000, guid: 7adae489c4132f544bad482b99b37996, type: 2}
-  targetCamera: {fileID: 1018127217}
-  showInGameView: 1
-  previewImage: {fileID: 0}
 --- !u!1 &760014295333700126
 GameObject:
   m_ObjectHideFlags: 0
@@ -2939,6 +2677,4 @@ SceneRoots:
   - {fileID: 1438270507}
   - {fileID: 650637332}
   - {fileID: 760014295333700127}
-  - {fileID: 1854854625}
-  - {fileID: 1906049849}
-  - {fileID: 1408818526}
+  - {fileID: 1660228840}
