@@ -86,13 +86,13 @@ Assets/
 │   ├── VrTouchReceiver.cs        # 터치 입력 처리
 │   ├── VrMultiTouchReceiver.cs   # [NEW] 멀티터치 입력 처리
 │   ├── VrHapticRequester.cs      # 햅틱 피드백
-│   ├── QuestAudioCommunicator.cs # [NEW] 양방향 오디오 통신
 │   └── WebRtcConnectionTester.cs # 연결 테스트 UI
 ├── Scenes/
 │   └── SampleScene.unity         # 메인 씬
 ├── Prefabs/
 │   └── WebRTC/                   # WebRTC 관련 프리팹
-└── StreamTexture.renderTexture   # 스트리밍용 텍스처
+├── StreamTexture.renderTexture   # 스트리밍용 텍스처
+└── ConnectionConfig.asset        # [NEW] 연결 설정
 ```
 
 ## 💡 핵심 컴포넌트 설명
