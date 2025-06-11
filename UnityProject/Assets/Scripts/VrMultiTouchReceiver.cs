@@ -110,7 +110,7 @@ namespace UnityVerseBridge.QuestApp
         {
             if (multiPeerManager != null)
             {
-                multiPeerManager.OnDataChannelMessageReceived += HandleDataChannelMessage;
+                multiPeerManager.OnMultiPeerDataChannelMessageReceived += HandleDataChannelMessage;
                 multiPeerManager.OnPeerDisconnected += HandlePeerDisconnected;
             }
         }
@@ -119,7 +119,7 @@ namespace UnityVerseBridge.QuestApp
         {
             if (multiPeerManager != null)
             {
-                multiPeerManager.OnDataChannelMessageReceived -= HandleDataChannelMessage;
+                multiPeerManager.OnMultiPeerDataChannelMessageReceived -= HandleDataChannelMessage;
                 multiPeerManager.OnPeerDisconnected -= HandlePeerDisconnected;
             }
 
