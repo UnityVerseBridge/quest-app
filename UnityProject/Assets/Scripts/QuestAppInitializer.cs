@@ -193,7 +193,7 @@ namespace UnityVerseBridge.QuestApp
                     else
                     {
                         // Multi peer mode
-                        Debug.Log("[QuestAppInitializer] Using MultiPeerWebRtcManager - connecting to room...");
+                        Debug.Log("[QuestAppInitializer] Using WebRtcManager in multi-peer mode - connecting to room...");
                         webRtcManager.Connect(connectionConfig.GetRoomId());
                     }
                     
@@ -302,7 +302,7 @@ namespace UnityVerseBridge.QuestApp
                         }
                         else
                         {
-                            // MultiPeerWebRtcManager handles negotiations automatically
+                            // WebRtcManager in multi-peer mode handles negotiations automatically
                             Debug.Log("[QuestAppInitializer] MultiPeer mode - automatic negotiation");
                         }
                     }

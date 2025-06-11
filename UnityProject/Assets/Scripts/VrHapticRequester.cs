@@ -12,7 +12,10 @@ namespace UnityVerseBridge.QuestApp
     public class VrHapticRequester : MonoBehaviour
     {
         [Header("WebRTC Manager")]
-        [SerializeField] private WebRtcManager webRtcManager;
+        [SerializeField] private MonoBehaviour webRtcManagerBehaviour;
+        
+        // Interface reference
+        private IWebRtcManager webRtcManager;
         
         [Header("Haptic Settings")]
         [Tooltip("컨트롤러 버튼 입력에 대한 햅틱 피드백을 활성화합니다.")]
@@ -40,20 +43,32 @@ namespace UnityVerseBridge.QuestApp
 
         void Awake()
         {
-            if (webRtcManager == null)
+            // Interface 참조 가져오기
+            if (webRtcManagerBehaviour == null)
             {
-                webRtcManager = FindFirstObjectByType<WebRtcManager>();
+                // Try to find WebRtcManager
+                webRtcManagerBehaviour = FindFirstObjectByType<WebRtcManager>();
+            }
+            
+            if (webRtcManagerBehaviour != null)
+            {
+                webRtcManager = webRtcManagerBehaviour as IWebRtcManager;
                 if (webRtcManager == null)
                 {
-                    Debug.LogError("[VrHapticRequester] WebRtcManager not found!");
+                    Debug.LogError("[VrHapticRequester] WebRtcManager behaviour must implement IWebRtcManager interface!");
                     enabled = false;
                 }
+            }
+            else
+            {
+                Debug.LogError("[VrHapticRequester] No WebRtcManager found!");
+                enabled = false;
             }
         }
 
         void Update()
         {
-            if (!webRtcManager.IsDataChannelOpen) return;
+            if (webRtcManager == null || !webRtcManager.IsWebRtcConnected) return;
 
             // 버튼 입력 감지
             if (enableButtonHaptics)
@@ -173,7 +188,7 @@ namespace UnityVerseBridge.QuestApp
 
         public void RequestHapticFeedback(HapticCommandType type, float duration = 0.1f, float intensity = 1.0f)
         {
-            if (webRtcManager != null && webRtcManager.IsDataChannelOpen)
+            if (webRtcManager != null && webRtcManager.IsWebRtcConnected)
             {
                 HapticCommand command = new HapticCommand(type, duration, intensity);
                 if (debugMode) Debug.Log($"[VrHapticRequester] Sending Haptic Command: {type}, Duration: {duration}s, Intensity: {intensity}");
@@ -184,7 +199,7 @@ namespace UnityVerseBridge.QuestApp
         // 충돌 이벤트 처리
         void OnCollisionEnter(Collision collision)
         {
-            if (!enableCollisionHaptics || !webRtcManager.IsDataChannelOpen) return;
+            if (!enableCollisionHaptics || webRtcManager == null || !webRtcManager.IsWebRtcConnected) return;
             
             // 충돌 강도에 따른 햅틱 피드백
             float impactForce = collision.relativeVelocity.magnitude;

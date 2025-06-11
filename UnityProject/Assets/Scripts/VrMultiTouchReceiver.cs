@@ -15,8 +15,8 @@ namespace UnityVerseBridge.QuestApp
     /// </summary>
     public class VrMultiTouchReceiver : MonoBehaviour
     {
-        [Header("Multi-Peer Manager")]
-        [SerializeField] private MultiPeerWebRtcManager multiPeerManager;
+        [Header("WebRTC Manager")]
+        [SerializeField] private WebRtcManager webRtcManager;
 
         [Header("Touch Display Settings")]
         [Tooltip("터치 포인터를 표시할 캔버스입니다.")]
@@ -75,12 +75,12 @@ namespace UnityVerseBridge.QuestApp
 
         void Awake()
         {
-            if (multiPeerManager == null)
+            if (webRtcManager == null)
             {
-                multiPeerManager = FindFirstObjectByType<MultiPeerWebRtcManager>();
-                if (multiPeerManager == null)
+                webRtcManager = FindFirstObjectByType<WebRtcManager>();
+                if (webRtcManager == null)
                 {
-                    Debug.LogError("[VrMultiTouchReceiver] MultiPeerWebRtcManager not found!");
+                    Debug.LogError("[VrMultiTouchReceiver] WebRtcManager not found!");
                     enabled = false;
                     return;
                 }
@@ -108,19 +108,19 @@ namespace UnityVerseBridge.QuestApp
 
         void OnEnable()
         {
-            if (multiPeerManager != null)
+            if (webRtcManager != null)
             {
-                multiPeerManager.OnMultiPeerDataChannelMessageReceived += HandleDataChannelMessage;
-                multiPeerManager.OnPeerDisconnected += HandlePeerDisconnected;
+                webRtcManager.OnMultiPeerDataChannelMessageReceived += HandleDataChannelMessage;
+                webRtcManager.OnPeerDisconnected += HandlePeerDisconnected;
             }
         }
 
         void OnDisable()
         {
-            if (multiPeerManager != null)
+            if (webRtcManager != null)
             {
-                multiPeerManager.OnMultiPeerDataChannelMessageReceived -= HandleDataChannelMessage;
-                multiPeerManager.OnPeerDisconnected -= HandlePeerDisconnected;
+                webRtcManager.OnMultiPeerDataChannelMessageReceived -= HandleDataChannelMessage;
+                webRtcManager.OnPeerDisconnected -= HandlePeerDisconnected;
             }
 
             // 모든 터치 포인터 정리

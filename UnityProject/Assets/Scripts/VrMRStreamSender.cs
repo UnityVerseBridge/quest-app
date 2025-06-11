@@ -9,12 +9,12 @@ namespace UnityVerseBridge.QuestApp
 {
     /// <summary>
     /// Quest 3의 MR 패스스루 화면을 캡처하여 여러 모바일 기기로 스트리밍하는 컴포넌트입니다.
-    /// MultiPeerWebRtcManager를 사용하여 1:N 스트리밍을 지원합니다.
+    /// WebRtcManager의 multi-peer mode를 사용하여 1:N 스트리밍을 지원합니다.
     /// </summary>
     public class VrMRStreamSender : MonoBehaviour
     {
-        [Header("Multi-Peer Manager")]
-        [SerializeField] private MultiPeerWebRtcManager multiPeerManager;
+        [Header("WebRTC Manager")]
+        [SerializeField] private WebRtcManager webRtcManager;
 
         [Header("MR Camera Settings")]
         [Tooltip("MR 화면을 캡처할 카메라입니다. (보통 CenterEyeAnchor)")]
@@ -52,12 +52,12 @@ namespace UnityVerseBridge.QuestApp
 
         void Awake()
         {
-            if (multiPeerManager == null)
+            if (webRtcManager == null)
             {
-                multiPeerManager = FindFirstObjectByType<MultiPeerWebRtcManager>();
-                if (multiPeerManager == null)
+                webRtcManager = FindFirstObjectByType<WebRtcManager>();
+                if (webRtcManager == null)
                 {
-                    Debug.LogError("[VrMRStreamSender] MultiPeerWebRtcManager not found!");
+                    Debug.LogError("[VrMRStreamSender] WebRtcManager not found!");
                     enabled = false;
                     return;
                 }
@@ -88,23 +88,23 @@ namespace UnityVerseBridge.QuestApp
 
         void OnEnable()
         {
-            if (multiPeerManager != null)
+            if (webRtcManager != null)
             {
-                multiPeerManager.OnPeerConnected += HandlePeerConnected;
-                multiPeerManager.OnPeerDisconnected += HandlePeerDisconnected;
-                multiPeerManager.OnSignalingConnected += StartStreaming;
-                multiPeerManager.OnSignalingDisconnected += StopStreaming;
+                webRtcManager.OnPeerConnected += HandlePeerConnected;
+                webRtcManager.OnPeerDisconnected += HandlePeerDisconnected;
+                webRtcManager.OnSignalingConnected += StartStreaming;
+                webRtcManager.OnSignalingDisconnected += StopStreaming;
             }
         }
 
         void OnDisable()
         {
-            if (multiPeerManager != null)
+            if (webRtcManager != null)
             {
-                multiPeerManager.OnPeerConnected -= HandlePeerConnected;
-                multiPeerManager.OnPeerDisconnected -= HandlePeerDisconnected;
-                multiPeerManager.OnSignalingConnected -= StartStreaming;
-                multiPeerManager.OnSignalingDisconnected -= StopStreaming;
+                webRtcManager.OnPeerConnected -= HandlePeerConnected;
+                webRtcManager.OnPeerDisconnected -= HandlePeerDisconnected;
+                webRtcManager.OnSignalingConnected -= StartStreaming;
+                webRtcManager.OnSignalingDisconnected -= StopStreaming;
             }
             
             StopStreaming();
@@ -139,7 +139,7 @@ namespace UnityVerseBridge.QuestApp
                 videoStreamTrack = new VideoStreamTrack(renderTexture);
                 
                 // MultiPeerManager에 비디오 트랙 추가
-                multiPeerManager.AddVideoTrack(videoStreamTrack);
+                webRtcManager.AddVideoTrack(videoStreamTrack);
                 
                 isStreaming = true;
                 
@@ -161,9 +161,9 @@ namespace UnityVerseBridge.QuestApp
             isStreaming = false;
 
             // 비디오 트랙 제거
-            if (videoStreamTrack != null && multiPeerManager != null)
+            if (videoStreamTrack != null && webRtcManager != null)
             {
-                multiPeerManager.RemoveTrack(videoStreamTrack);
+                webRtcManager.RemoveTrack(videoStreamTrack);
                 videoStreamTrack.Dispose();
                 videoStreamTrack = null;
             }
@@ -221,7 +221,7 @@ namespace UnityVerseBridge.QuestApp
 
         private void HandlePeerConnected(string peerId)
         {
-            currentPeerCount = multiPeerManager.ActiveConnectionsCount;
+            currentPeerCount = webRtcManager.ActiveConnectionsCount;
             Debug.Log($"[VrMRStreamSender] Peer connected: {peerId}, Total peers: {currentPeerCount}");
             
             if (adjustQualityByPeerCount)
@@ -232,7 +232,7 @@ namespace UnityVerseBridge.QuestApp
 
         private void HandlePeerDisconnected(string peerId)
         {
-            currentPeerCount = multiPeerManager.ActiveConnectionsCount;
+            currentPeerCount = webRtcManager.ActiveConnectionsCount;
             Debug.Log($"[VrMRStreamSender] Peer disconnected: {peerId}, Total peers: {currentPeerCount}");
             
             if (adjustQualityByPeerCount)

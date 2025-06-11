@@ -1743,7 +1743,6 @@ MonoBehaviour:
   maxConnections: 5
   peerRole: 0
   roomId: default-room
-  autoStartHost: 1
   _isSignalingConnected: 0
   _activeConnectionsCount: 0
   _connectedPeerIds: []
@@ -2182,7 +2181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d13220af0f186a64d8ee87f05638929f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  webRtcManager: {fileID: 0}
+  webRtcManagerBehaviour: {fileID: 1408818527}
   vrCamera: {fileID: 1018127217}
   touchRayDistance: 1.5
   touchPointerPrefab: {fileID: 8343167407413159200, guid: d56cf1aacbea4704cac4d7983df1a0ad, type: 3}
@@ -2331,7 +2330,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe4d792f72284af40ac9b190ff482dd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  webRtcManager: {fileID: 0}
+  webRtcManagerBehaviour: {fileID: 1408818527}
   connectionConfig: {fileID: 11400000, guid: 148e18c633241364e952a981cac6e079, type: 2}
   webRtcConfiguration:
     iceServers:
@@ -2685,7 +2684,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95e4d74188bb97b49a37a272a5424cea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  webRtcManager: {fileID: 0}
+  webRtcManagerBehaviour: {fileID: 1408818527}
   sourceRenderTexture: {fileID: 8400000, guid: 7adae489c4132f544bad482b99b37996, type: 2}
   targetCamera: {fileID: 1018127217}
   showInGameView: 1
