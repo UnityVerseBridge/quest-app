@@ -12,11 +12,10 @@ namespace UnityVerseBridge.QuestApp
 {
     public class VrTouchReceiver : MonoBehaviour
     {
-        [SerializeField] private WebRtcManager webRtcManager;
-        [SerializeField] private MultiPeerWebRtcManager multiPeerWebRtcManager;
+        [SerializeField] private MonoBehaviour webRtcManagerBehaviour;
         
-        // Flag to determine which manager to use
-        private bool useMultiPeer => multiPeerWebRtcManager != null;
+        // Interface reference
+        private IWebRtcManager webRtcManager;
 
         // 터치 위치를 시각화할 프리팹 또는 오브젝트 (선택 사항)
         // [SerializeField] private GameObject touchIndicatorPrefab;
@@ -25,34 +24,34 @@ namespace UnityVerseBridge.QuestApp
 
         void Start()
         {
-            if (webRtcManager == null && multiPeerWebRtcManager == null)
+            if (webRtcManagerBehaviour == null)
             {
-                Debug.LogError("Neither WebRtcManager nor MultiPeerWebRtcManager is assigned!");
+                Debug.LogError("WebRtcManager behaviour not assigned!");
+                enabled = false;
+                return;
+            }
+            
+            // Get interface reference
+            webRtcManager = webRtcManagerBehaviour as IWebRtcManager;
+            if (webRtcManager == null)
+            {
+                Debug.LogError("WebRtcManager behaviour must implement IWebRtcManager interface!");
                 enabled = false;
                 return;
             }
             
             // 데이터 채널 메시지 수신 이벤트 구독
-            if (useMultiPeer)
-            {
-                multiPeerWebRtcManager.OnDataChannelMessageReceived += HandleMultiPeerDataChannelMessage;
-            }
-            else
-            {
-                webRtcManager.OnDataChannelMessageReceived += HandleDataChannelMessageReceived;
-            }
+            webRtcManager.OnDataChannelMessageReceived += HandleDataChannelMessageReceived;
+            webRtcManager.OnMultiPeerDataChannelMessageReceived += HandleMultiPeerDataChannelMessage;
         }
 
         void OnDestroy()
         {
             // 이벤트 구독 해지
-            if (useMultiPeer && multiPeerWebRtcManager != null)
-            {
-                multiPeerWebRtcManager.OnDataChannelMessageReceived -= HandleMultiPeerDataChannelMessage;
-            }
-            else if (webRtcManager != null)
+            if (webRtcManager != null)
             {
                 webRtcManager.OnDataChannelMessageReceived -= HandleDataChannelMessageReceived;
+                webRtcManager.OnMultiPeerDataChannelMessageReceived -= HandleMultiPeerDataChannelMessage;
             }
         }
 

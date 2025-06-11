@@ -21,13 +21,12 @@ namespace UnityVerseBridge.QuestApp
         private bool mobilePeerJoined = false;
 
         [Header("Dependencies")]
-        [SerializeField] private WebRtcManager webRtcManager;
-        [SerializeField] private MultiPeerWebRtcManager multiPeerWebRtcManager;
+        [SerializeField] private MonoBehaviour webRtcManagerBehaviour;
         [SerializeField] private ConnectionConfig connectionConfig;
         [SerializeField] private WebRtcConfiguration webRtcConfiguration;
         
-        // Flag to determine which manager to use
-        private bool useMultiPeer => multiPeerWebRtcManager != null;
+        // Interface reference
+        private IWebRtcManager webRtcManager;
         
         [Header("Settings")]
         [SerializeField] private bool autoConnectOnStart = true;
@@ -77,30 +76,31 @@ namespace UnityVerseBridge.QuestApp
                 throw new InvalidOperationException("Required dependencies are missing");
             }
 
+            // Interface 참조 가져오기
+            webRtcManager = webRtcManagerBehaviour as IWebRtcManager;
+            if (webRtcManager == null)
+            {
+                throw new InvalidOperationException("webRtcManagerBehaviour must implement IWebRtcManager interface");
+            }
+            
             // WebSocket 어댑터와 시그널링 클라이언트 생성
             webSocketAdapter = new SystemWebSocketAdapter();
             signalingClient = new SignalingClient();
             
-            if (useMultiPeer)
+            // WebRTC 매니저 설정
+            webRtcManager.SetupSignaling(signalingClient);
+            
+            if (webRtcConfiguration != null)
             {
-                // MultiPeerWebRtcManager 설정
-                multiPeerWebRtcManager.SetupSignaling(signalingClient);
+                webRtcManager.SetConfiguration(webRtcConfiguration);
             }
-            else
+            
+            // Set WebRtcManager specific settings if it's the concrete type
+            var concreteWebRtcManager = webRtcManagerBehaviour as WebRtcManager;
+            if (concreteWebRtcManager != null)
             {
-                // WebRtcManager 설정
-                webRtcManager.SetRole(true);
-                webRtcManager.SetupSignaling(signalingClient);
-                
-                if (webRtcConfiguration != null)
-                {
-                    webRtcManager.SetConfiguration(webRtcConfiguration);
-                }
-
-                // Set role as Offerer
-                webRtcManager.SetRole(true);
-                // Disable auto-start to control timing manually
-                webRtcManager.autoStartPeerConnection = false;
+                concreteWebRtcManager.SetRole(true);
+                concreteWebRtcManager.autoStartPeerConnection = false;
             }
 
             if (autoConnectOnStart)
@@ -113,9 +113,9 @@ namespace UnityVerseBridge.QuestApp
 
         private bool ValidateDependencies()
         {
-            if (webRtcManager == null && multiPeerWebRtcManager == null)
+            if (webRtcManagerBehaviour == null)
             {
-                Debug.LogError("[QuestAppInitializer] Neither WebRtcManager nor MultiPeerWebRtcManager is assigned!");
+                Debug.LogError("[QuestAppInitializer] WebRtcManager behaviour not assigned!");
                 return false;
             }
             
@@ -178,35 +178,32 @@ namespace UnityVerseBridge.QuestApp
                     signalingClient.OnSignalingMessageReceived += HandleSignalingMessage;
                     
                     // Wait for mobile peer
-                    if (useMultiPeer)
+                    Debug.Log("[QuestAppInitializer] Setting up connection...");
+                    await Task.Delay(500); // Wait for signaling to stabilize
+                    
+                    var concreteWebRtcManager = webRtcManagerBehaviour as WebRtcManager;
+                    if (concreteWebRtcManager != null)
                     {
-                        Debug.Log("[QuestAppInitializer] Using MultiPeerWebRtcManager - waiting for peers to join...");
-                        await Task.Delay(500); // Wait for signaling to stabilize
-                        multiPeerWebRtcManager.StartAsHost(connectionConfig.GetRoomId());
-                    }
-                    else if (webRtcManager != null)
-                    {
+                        // Single peer mode
                         Debug.Log("[QuestAppInitializer] Creating PeerConnection immediately after registration...");
-                        await Task.Delay(500); // Wait for signaling to stabilize
-                        webRtcManager.CreatePeerConnection();
-                        webRtcManager.CreateDataChannel();
+                        concreteWebRtcManager.CreatePeerConnection();
+                        concreteWebRtcManager.CreateDataChannel();
                         Debug.Log("[QuestAppInitializer] PeerConnection and DataChannel created. Waiting for mobile peer...");
+                    }
+                    else
+                    {
+                        // Multi peer mode
+                        Debug.Log("[QuestAppInitializer] Using MultiPeerWebRtcManager - connecting to room...");
+                        webRtcManager.Connect(connectionConfig.GetRoomId());
                     }
                     
                     await WaitForMobilePeer();
                     
                     if (hasMobilePeer)
                     {
-                        if (useMultiPeer)
-                        {
-                            Debug.Log("[QuestAppInitializer] Mobile peer joined. MultiPeerWebRtcManager will handle negotiations automatically.");
-                        }
-                        else if (webRtcManager != null)
-                        {
-                            Debug.Log("[QuestAppInitializer] Mobile peer joined. Waiting for video track to be added before creating offer...");
-                            // Don't create offer immediately - wait for video track to be added
-                            // The negotiation will be triggered automatically when tracks are added
-                        }
+                        Debug.Log("[QuestAppInitializer] Mobile peer joined. Waiting for video track to be added before creating offer...");
+                        // Don't create offer immediately - wait for video track to be added
+                        // The negotiation will be triggered automatically when tracks are added
                     }
                     
                     break; // Success
@@ -297,15 +294,16 @@ namespace UnityVerseBridge.QuestApp
                         mobilePeerJoined = true;  // Set this flag!
                         
                         // Trigger negotiation if we have tracks ready
-                        if (useMultiPeer)
-                        {
-                            // MultiPeerWebRtcManager handles negotiations automatically
-                            Debug.Log("[QuestAppInitializer] MultiPeer mode - automatic negotiation");
-                        }
-                        else if (webRtcManager != null && webRtcManager.GetPeerConnectionState() == RTCPeerConnectionState.New)
+                        var concreteWebRtcManager = webRtcManagerBehaviour as WebRtcManager;
+                        if (concreteWebRtcManager != null && concreteWebRtcManager.GetPeerConnectionState() == RTCPeerConnectionState.New)
                         {
                             // Give the VrStreamSender a chance to add tracks
                             StartCoroutine(TriggerNegotiationAfterDelay());
+                        }
+                        else
+                        {
+                            // MultiPeerWebRtcManager handles negotiations automatically
+                            Debug.Log("[QuestAppInitializer] MultiPeer mode - automatic negotiation");
                         }
                     }
                 }
@@ -316,13 +314,10 @@ namespace UnityVerseBridge.QuestApp
                     hasMobilePeer = true;
                     
                     // Mobile client is ready, trigger negotiation now
-                    if (useMultiPeer)
+                    var concreteWebRtcManager = webRtcManagerBehaviour as WebRtcManager;
+                    if (concreteWebRtcManager != null)
                     {
-                        Debug.Log("[QuestAppInitializer] Client ready - MultiPeer mode handles automatically");
-                    }
-                    else if (webRtcManager != null)
-                    {
-                        var state = webRtcManager.GetPeerConnectionState();
+                        var state = concreteWebRtcManager.GetPeerConnectionState();
                         Debug.Log($"[QuestAppInitializer] PeerConnection state: {state}");
                         
                         // If negotiation is needed, start it
@@ -330,6 +325,10 @@ namespace UnityVerseBridge.QuestApp
                         {
                             StartCoroutine(TriggerNegotiationAfterDelay());
                         }
+                    }
+                    else
+                    {
+                        Debug.Log("[QuestAppInitializer] Client ready - MultiPeer mode handles automatically");
                     }
                 }
                 else if (type == "error")
@@ -364,16 +363,17 @@ namespace UnityVerseBridge.QuestApp
             // Wait a bit for tracks to be added
             yield return new WaitForSeconds(1.0f);
             
-            if (!useMultiPeer && webRtcManager != null)
+            var concreteWebRtcManager = webRtcManagerBehaviour as WebRtcManager;
+            if (concreteWebRtcManager != null)
             {
-                var state = webRtcManager.GetPeerConnectionState();
-                Debug.Log($"[QuestAppInitializer] Checking if negotiation is needed. PC State: {state}, isNegotiating: {webRtcManager.IsNegotiating}");
+                var state = concreteWebRtcManager.GetPeerConnectionState();
+                Debug.Log($"[QuestAppInitializer] Checking if negotiation is needed. PC State: {state}, isNegotiating: {concreteWebRtcManager.IsNegotiating}");
                 
                 // Start negotiation if we're not already negotiating
-                if (!webRtcManager.IsNegotiating && state != RTCPeerConnectionState.Closed && state != RTCPeerConnectionState.Failed)
+                if (!concreteWebRtcManager.IsNegotiating && state != RTCPeerConnectionState.Closed && state != RTCPeerConnectionState.Failed)
                 {
                     Debug.Log("[QuestAppInitializer] Starting negotiation after mobile peer is ready...");
-                    webRtcManager.StartNegotiation();
+                    concreteWebRtcManager.StartNegotiation();
                 }
             }
         }
@@ -405,11 +405,7 @@ namespace UnityVerseBridge.QuestApp
                 signalingClient.OnSignalingMessageReceived -= HandleSignalingMessage;
             }
             
-            if (useMultiPeer && multiPeerWebRtcManager != null)
-            {
-                multiPeerWebRtcManager.DisconnectAll();
-            }
-            else if (webRtcManager != null)
+            if (webRtcManager != null)
             {
                 webRtcManager.Disconnect();
             }
