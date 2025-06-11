@@ -584,7 +584,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97c97271932d5104b82c8ea303932e41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  webRtcManager: {fileID: 1408818525}
+  webRtcManager: {fileID: 0}
   enableButtonHaptics: 1
   enableTriggerHaptics: 1
   enableGripHaptics: 1
@@ -1696,7 +1696,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1408818526}
-  - component: {fileID: 1408818525}
+  - component: {fileID: 1408818527}
   m_Layer: 0
   m_Name: WebRTCManager
   m_TagString: Untagged
@@ -1704,32 +1704,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1408818525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1408818524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a981495169898ed4a995621c48e80f7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  configuration:
-    iceServers:
-    - credential: 
-      credentialType: 0
-      urls:
-      - stun:stun.l.google.com:19302
-      username: 
-    dataChannelLabel: data-channel
-  signalingServerUrl: ws://1.219.187.87:9090
-  isOfferer: 1
-  autoStartPeerConnection: 0
-  _isSignalingConnected: 0
-  _peerConnectionState: 0
-  _dataChannelState: 3
 --- !u!4 &1408818526
 Transform:
   m_ObjectHideFlags: 0
@@ -1745,6 +1719,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1408818527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1408818524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 123456789abcdef0123456789abcdef0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  configuration:
+    iceServers:
+    - credential: 
+      credentialType: 0
+      urls:
+      - stun:stun.l.google.com:19302
+      username: 
+    dataChannelLabel: sendChannel
+  signalingServerUrl: ws://1.219.187.87:9090
+  maxConnections: 5
+  peerRole: 0
+  roomId: default-room
+  autoStartHost: 1
+  _isSignalingConnected: 0
+  _activeConnectionsCount: 0
+  _connectedPeerIds: []
 --- !u!1001 &1432556347
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2180,7 +2182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d13220af0f186a64d8ee87f05638929f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  webRtcManager: {fileID: 1408818525}
+  webRtcManager: {fileID: 0}
   vrCamera: {fileID: 1018127217}
   touchRayDistance: 1.5
   touchPointerPrefab: {fileID: 8343167407413159200, guid: d56cf1aacbea4704cac4d7983df1a0ad, type: 3}
@@ -2296,7 +2298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5738cb205c809646bfe6bb5d65e28f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  webRtcManager: {fileID: 1408818525}
+  webRtcManager: {fileID: 0}
   enableMicrophone: 1
   enableSpeaker: 1
   sampleRate: 48000
@@ -2329,7 +2331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe4d792f72284af40ac9b190ff482dd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  webRtcManager: {fileID: 1408818525}
+  webRtcManager: {fileID: 0}
   connectionConfig: {fileID: 11400000, guid: 148e18c633241364e952a981cac6e079, type: 2}
   webRtcConfiguration:
     iceServers:
@@ -2683,7 +2685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95e4d74188bb97b49a37a272a5424cea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  webRtcManager: {fileID: 1408818525}
+  webRtcManager: {fileID: 0}
   sourceRenderTexture: {fileID: 8400000, guid: 7adae489c4132f544bad482b99b37996, type: 2}
   targetCamera: {fileID: 1018127217}
   showInGameView: 1

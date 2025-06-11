@@ -12,7 +12,11 @@ namespace UnityVerseBridge.QuestApp
     public class VrStreamSender : MonoBehaviour
     {
         [SerializeField] private WebRtcManager webRtcManager;
+        [SerializeField] private MultiPeerWebRtcManager multiPeerWebRtcManager;
         [SerializeField] private RenderTexture sourceRenderTexture; // Inspector에서 할당
+        
+        // Flag to determine which manager to use
+        private bool useMultiPeer => multiPeerWebRtcManager != null;
         
         [Header("카메라 설정")]
         [SerializeField] private Camera targetCamera; // 스트리밍할 카메라
@@ -26,14 +30,21 @@ namespace UnityVerseBridge.QuestApp
         
         void Start()
         {
-            if (webRtcManager == null)
+            if (webRtcManager == null && multiPeerWebRtcManager == null)
             {
-                Debug.LogError("[VrStreamSender] WebRtcManager가 할당되지 않았습니다!");
+                Debug.LogError("[VrStreamSender] Neither WebRtcManager nor MultiPeerWebRtcManager is assigned!");
                 enabled = false;
                 return;
             }
             
-            Debug.Log($"[VrStreamSender] WebRTC connection state at start: {webRtcManager.IsWebRtcConnected}");
+            if (useMultiPeer)
+            {
+                Debug.Log($"[VrStreamSender] Using MultiPeerWebRtcManager. Is signaling connected: {multiPeerWebRtcManager.IsSignalingConnected}");
+            }
+            else
+            {
+                Debug.Log($"[VrStreamSender] Using WebRtcManager. WebRTC connection state at start: {webRtcManager.IsWebRtcConnected}");
+            }
 
             
             // 카메라 설정 - 지정 안 된 경우 Main Camera 사용
@@ -94,7 +105,15 @@ namespace UnityVerseBridge.QuestApp
 
             
             // WebRTC 연결 성공 이벤트 구독
-            webRtcManager.OnWebRtcConnected += StartStreaming;
+            if (useMultiPeer)
+            {
+                multiPeerWebRtcManager.OnPeerConnected += OnPeerConnected;
+                multiPeerWebRtcManager.OnSignalingConnected += OnSignalingConnected;
+            }
+            else
+            {
+                webRtcManager.OnWebRtcConnected += StartStreaming;
+            }
             
             // Check if we should add video track immediately (if peer connection exists)
             StartCoroutine(CheckAndAddVideoTrackEarly());
@@ -175,8 +194,17 @@ namespace UnityVerseBridge.QuestApp
             // Wait a bit for initialization
             yield return new WaitForSeconds(2.0f);
             
-            // Check if peer connection exists but we haven't added track yet
-            if (webRtcManager != null && !trackAdded)
+            // Check if we should add track early
+            if (useMultiPeer)
+            {
+                // MultiPeer는 시그널링 연결 후 트랙 추가
+                if (multiPeerWebRtcManager.IsSignalingConnected && !trackAdded)
+                {
+                    Debug.Log("[VrStreamSender] MultiPeer signaling connected. Adding video track early...");
+                    AddVideoTrack();
+                }
+            }
+            else if (webRtcManager != null && !trackAdded)
             {
                 var pcState = webRtcManager.GetPeerConnectionState();
                 Debug.Log($"[VrStreamSender] Checking if we should add video track early. PC State: {pcState}");
@@ -189,29 +217,33 @@ namespace UnityVerseBridge.QuestApp
             }
         }
         
-        void Update()
-        {
-            // 스트리밍 상태 주기적 체크 (1초마다)
-            if (Time.frameCount % 60 == 0 && videoStreamTrack != null)
-            {
-                Debug.Log($"[VrStreamSender] Stream check - Track: {videoStreamTrack.Enabled}, RT: {sourceRenderTexture?.IsCreated()}, PC: {webRtcManager.GetPeerConnectionState()}");
+        // void Update()
+        // {
+        //     // 스트리밍 상태 주기적 체크 (1초마다)
+        //     if (Time.frameCount % 60 == 0 && videoStreamTrack != null)
+        //     {
+        //         Debug.Log($"[VrStreamSender] Stream check - Track: {videoStreamTrack.Enabled}, RT: {sourceRenderTexture?.IsCreated()}, PC: {webRtcManager.GetPeerConnectionState()}");
                 
-                // Quest 디바이스에서 추가 디버그
-                #if UNITY_ANDROID && !UNITY_EDITOR
-                if (mirrorCamera != null)
-                {
-                    Debug.Log($"[VrStreamSender] Mirror cam enabled: {mirrorCamera.enabled}, Target RT: {mirrorCamera.targetTexture != null}");
-                }
-                #endif
-            }
-        }
+        //         // Quest 디바이스에서 추가 디버그
+        //         #if UNITY_ANDROID && !UNITY_EDITOR
+        //         if (mirrorCamera != null)
+        //         {
+        //             Debug.Log($"[VrStreamSender] Mirror cam enabled: {mirrorCamera.enabled}, Target RT: {mirrorCamera.targetTexture != null}");
+        //         }
+        //         #endif
+        //     }
+        // }
         
         void OnDestroy()
         {
             // 이벤트 구독 해지 및 트랙 정리
-            if (webRtcManager != null)
+            if (useMultiPeer && multiPeerWebRtcManager != null)
             {
-
+                multiPeerWebRtcManager.OnPeerConnected -= OnPeerConnected;
+                multiPeerWebRtcManager.OnSignalingConnected -= OnSignalingConnected;
+            }
+            else if (webRtcManager != null)
+            {
                 webRtcManager.OnWebRtcConnected -= StartStreaming;
             }
             
@@ -301,21 +333,29 @@ namespace UnityVerseBridge.QuestApp
                 return;
             }
             
-            if (webRtcManager == null)
-            {
-                Debug.LogError("[VrStreamSender] WebRtcManager가 null이므로 비디오 트랙을 추가할 수 없습니다.");
-                return;
-            }
-
             try
             {
-                webRtcManager.AddVideoTrack(videoStreamTrack);
-                trackAdded = true;
-                Debug.Log("[VrStreamSender] Video track added to WebRTC connection - this should trigger negotiation");
+                if (useMultiPeer)
+                {
+                    multiPeerWebRtcManager.AddVideoTrack(videoStreamTrack);
+                    trackAdded = true;
+                    Debug.Log("[VrStreamSender] Video track added to MultiPeerWebRtcManager");
+                }
+                else if (webRtcManager != null)
+                {
+                    webRtcManager.AddVideoTrack(videoStreamTrack);
+                    trackAdded = true;
+                    Debug.Log("[VrStreamSender] Video track added to WebRtcManager - this should trigger negotiation");
+                }
+                else
+                {
+                    Debug.LogError("[VrStreamSender] No WebRTC manager available to add video track");
+                    return;
+                }
             }
             catch (Exception e)
             {
-                Debug.LogError($"[VrStreamSender] WebRtcManager.AddVideoTrack() 중 예외 발생: {e.Message}\n{e.StackTrace}");
+                Debug.LogError($"[VrStreamSender] AddVideoTrack() 중 예외 발생: {e.Message}\n{e.StackTrace}");
                 trackAdded = false; // 실패 시 플래그 원복
             }
         }
@@ -324,13 +364,36 @@ namespace UnityVerseBridge.QuestApp
         {
             if (videoStreamTrack != null)
             {
-                // TODO: WebRtcManager에 RemoveTrack 기능 구현 필요
-                // if (webRtcManager != null) webRtcManager.RemoveTrack(videoStreamTrack);
+                if (useMultiPeer && multiPeerWebRtcManager != null)
+                {
+                    multiPeerWebRtcManager.RemoveTrack(videoStreamTrack);
+                }
+                else if (webRtcManager != null && webRtcManager.GetType().GetMethod("RemoveTrack") != null)
+                {
+                    // TODO: WebRtcManager에 RemoveTrack 기능 구현 필요
+                    // webRtcManager.RemoveTrack(videoStreamTrack);
+                }
+                
                 videoStreamTrack.Dispose(); // 트랙 리소스 해제
                 videoStreamTrack = null;
                 trackAdded = false;
             }
-
+        }
+        
+        // MultiPeer 이벤트 핸들러
+        private void OnSignalingConnected()
+        {
+            Debug.Log("[VrStreamSender] MultiPeer signaling connected. Adding video track...");
+            if (!trackAdded)
+            {
+                AddVideoTrack();
+            }
+        }
+        
+        private void OnPeerConnected(string peerId)
+        {
+            Debug.Log($"[VrStreamSender] Peer connected: {peerId}. Video track already added: {trackAdded}");
+            // MultiPeer에서는 트랙이 자동으로 모든 피어에게 추가됨
         }
     }
 }

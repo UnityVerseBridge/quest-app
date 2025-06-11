@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityVerseBridge.Core; // WebRtcManager 사용
+using UnityVerseBridge.Core; // WebRtcManager, MultiPeerWebRtcManager 사용
 using UnityVerseBridge.Core.DataChannel.Data; // 데이터 구조 사용
 using System; // Exception 사용
 using TouchPhase = UnityVerseBridge.Core.DataChannel.Data.TouchPhase; // 명시적 타입 지정
@@ -13,6 +13,10 @@ namespace UnityVerseBridge.QuestApp
     public class VrTouchReceiver : MonoBehaviour
     {
         [SerializeField] private WebRtcManager webRtcManager;
+        [SerializeField] private MultiPeerWebRtcManager multiPeerWebRtcManager;
+        
+        // Flag to determine which manager to use
+        private bool useMultiPeer => multiPeerWebRtcManager != null;
 
         // 터치 위치를 시각화할 프리팹 또는 오브젝트 (선택 사항)
         // [SerializeField] private GameObject touchIndicatorPrefab;
@@ -21,20 +25,32 @@ namespace UnityVerseBridge.QuestApp
 
         void Start()
         {
-            if (webRtcManager == null)
+            if (webRtcManager == null && multiPeerWebRtcManager == null)
             {
-                Debug.LogError("WebRtcManager가 Inspector에 할당되지 않았습니다!");
+                Debug.LogError("Neither WebRtcManager nor MultiPeerWebRtcManager is assigned!");
                 enabled = false;
                 return;
             }
+            
             // 데이터 채널 메시지 수신 이벤트 구독
-            webRtcManager.OnDataChannelMessageReceived += HandleDataChannelMessageReceived;
+            if (useMultiPeer)
+            {
+                multiPeerWebRtcManager.OnDataChannelMessageReceived += HandleMultiPeerDataChannelMessage;
+            }
+            else
+            {
+                webRtcManager.OnDataChannelMessageReceived += HandleDataChannelMessageReceived;
+            }
         }
 
         void OnDestroy()
         {
             // 이벤트 구독 해지
-            if (webRtcManager != null)
+            if (useMultiPeer && multiPeerWebRtcManager != null)
+            {
+                multiPeerWebRtcManager.OnDataChannelMessageReceived -= HandleMultiPeerDataChannelMessage;
+            }
+            else if (webRtcManager != null)
             {
                 webRtcManager.OnDataChannelMessageReceived -= HandleDataChannelMessageReceived;
             }
@@ -173,6 +189,14 @@ namespace UnityVerseBridge.QuestApp
                     }
                     break;
             }
+        }
+        
+        // MultiPeer 데이터 채널 메시지 핸들러
+        private void HandleMultiPeerDataChannelMessage(string peerId, string jsonData)
+        {
+            Debug.Log($"[VrTouchReceiver] Received message from peer {peerId}");
+            // MultiPeer에서는 peerId를 무시하고 동일하게 처리
+            HandleDataChannelMessageReceived(jsonData);
         }
     }
 }
