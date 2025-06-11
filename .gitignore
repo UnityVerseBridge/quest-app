@@ -1,0 +1,8 @@
+
+# Connection configuration files (contain sensitive server information)
+*ConnectionConfig.asset
+*ConnectionConfig.asset.meta
+ConnectionConfig.asset
+ConnectionConfig.asset.meta
+**/ConnectionConfig.asset
+**/ConnectionConfig.asset.meta
