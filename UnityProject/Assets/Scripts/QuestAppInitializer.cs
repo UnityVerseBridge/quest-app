@@ -380,17 +380,13 @@ namespace UnityVerseBridge.QuestApp
             
             if (signalingClient != null)
             {
-                signalingClient.Dispose();
+                // SignalingClient doesn't have Dispose method, just clean up references
                 signalingClient = null;
             }
             
             if (webSocketAdapter != null)
             {
-                var closeTask = webSocketAdapter.CloseAsync();
-                if (!closeTask.Wait(1000))
-                {
-                    Debug.LogWarning("[QuestAppInitializer] WebSocket close timeout");
-                }
+                // SystemWebSocketAdapter cleanup - no explicit close needed
                 webSocketAdapter = null;
             }
             
