@@ -5,18 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
-    path: Assets/Samples/Meta XR Core SDK/77.0.0/Sample Scenes/HandMicrogestures.unity
-    guid: 1b1c5974df2e1dd4c8c6e52c9db592eb
-  - enabled: 0
-    path: Assets/Samples/Meta XR Core SDK/77.0.0/Tracking Origin Sample/TrackingOrigin.unity
-    guid: 6aa393c90c6694b4bad7572e2202edbf
-  - enabled: 0
-    path: Assets/Samples/Meta XR Core SDK/77.0.0/Mixed Reality Sample/MixedReality.unity
-    guid: fc8cf684948f0654f9bb46acfbba709e
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 55daccc09a3b69647bbab145b54a3ab3
+  - enabled: 1
+    path: Assets/Samples/XR Interaction Toolkit/3.1.2/Starter Assets/DemoScene.unity
+    guid: 319dafa5c80f29f428dc1e0d03f04177
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: bfa1182bd221b4ca89619141f66f1260, type: 2}
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: dc5a169419fa04987b057f65238cf3ba, type: 2}
