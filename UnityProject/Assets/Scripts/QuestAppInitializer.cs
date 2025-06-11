@@ -25,8 +25,8 @@ namespace UnityVerseBridge.QuestApp
         [SerializeField] private ConnectionConfig connectionConfig;
         [SerializeField] private WebRtcConfiguration webRtcConfiguration;
         
-        // Interface reference
-        private IWebRtcManager webRtcManager;
+        // WebRtcManager reference
+        private WebRtcManager webRtcManager;
         
         [Header("Settings")]
         [SerializeField] private bool autoConnectOnStart = true;
@@ -76,11 +76,11 @@ namespace UnityVerseBridge.QuestApp
                 throw new InvalidOperationException("Required dependencies are missing");
             }
 
-            // Interface 참조 가져오기
-            webRtcManager = webRtcManagerBehaviour as IWebRtcManager;
+            // WebRtcManager 참조 가져오기
+            webRtcManager = webRtcManagerBehaviour as WebRtcManager;
             if (webRtcManager == null)
             {
-                throw new InvalidOperationException("webRtcManagerBehaviour must implement IWebRtcManager interface");
+                throw new InvalidOperationException("webRtcManagerBehaviour must be of type WebRtcManager");
             }
             
             // WebSocket 어댑터와 시그널링 클라이언트 생성
