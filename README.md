@@ -59,6 +59,12 @@ This is a sample Quest application that showcases:
 - `InputSystemFix.cs`: Workaround for Unity 6 + Meta XR compatibility
 - Automatically applied at runtime
 
+### Video Streaming
+- Default resolution: 640x360 @ 30fps for optimal performance
+- Adaptive quality based on connected peers
+- H264 codec with hardware acceleration
+- Passthrough support for mixed reality
+
 ## Testing in Editor
 
 1. Install Meta XR Simulator
