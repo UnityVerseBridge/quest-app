@@ -1881,91 +1881,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1767192433, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
   m_PrefabInstance: {fileID: 9014170783777442263}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &1468372582
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2700467890376951311, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: debugMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2861555993075523892, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_Name
-      value: UnityVerseBridge_Quest
-      objectReference: {fileID: 0}
-    - target: {fileID: 4549968269435214681, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: vrCamera
-      value: 
-      objectReference: {fileID: 1731298971}
-    - target: {fileID: 4549968269435214681, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: configuration
-      value: 
-      objectReference: {fileID: 11400000, guid: a969a4030ecef4c59b2644ae309ba70a, type: 2}
-    - target: {fileID: 4549968269435214681, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: questStreamCamera
-      value: 
-      objectReference: {fileID: 1731298971}
-    - target: {fileID: 4549968269435214681, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: webRtcConfiguration
-      value: 
-      objectReference: {fileID: 11400000, guid: 4cb55756405444e3397b58c81ecfc16a, type: 2}
-    - target: {fileID: 4931838205732112943, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: debugMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5513224053206418442, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: debugMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813125594720701699, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813125594720701699, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813125594720701699, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813125594720701699, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813125594720701699, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813125594720701699, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813125594720701699, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813125594720701699, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813125594720701699, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7813125594720701699, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5f11dff92fc174a4b9a9e4dc506c89b4, type: 3}
 --- !u!1 &1486677401
 GameObject:
   m_ObjectHideFlags: 0
@@ -2605,6 +2520,78 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1743632699}
   m_CullTransparentMesh: 0
+--- !u!1 &1772709359
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1772709361}
+  - component: {fileID: 1772709362}
+  - component: {fileID: 1772709360}
+  m_Layer: 0
+  m_Name: UnityVerseBridge_Quest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1772709360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1772709359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71e414be65d6242bf8715bfe3904daa6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  configuration: {fileID: 11400000, guid: b0a9db7e865f649269db2a21ef6c78f5, type: 2}
+  webRtcConfiguration: {fileID: 11400000, guid: 0d534b078c13a4ac8b87bcbd5ccf05fc, type: 2}
+  enableAutoConnect: 1
+  enableDebugLogging: 1
+  vrCamera: {fileID: 1731298971}
+  enableVideoStreaming: 1
+  enableTouchReceiving: 1
+  enableHapticFeedback: 1
+  touchCanvas: {fileID: 0}
+  videoDisplay: {fileID: 0}
+  enableVideoReceiving: 0
+  enableTouchSending: 0
+  enableHapticReceiving: 0
+  connectionUI: {fileID: 0}
+--- !u!4 &1772709361
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1772709359}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1772709362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1772709359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe4d792f72284af40ac9b190ff482dd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bridgeManager: {fileID: 1772709360}
 --- !u!1 &1807497889
 GameObject:
   m_ObjectHideFlags: 0
@@ -4978,4 +4965,4 @@ SceneRoots:
   - {fileID: 1017698943352573226}
   - {fileID: 876656115}
   - {fileID: 3953970342977539823}
-  - {fileID: 1468372582}
+  - {fileID: 1772709361}
