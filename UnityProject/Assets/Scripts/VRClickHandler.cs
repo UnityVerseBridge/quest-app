@@ -32,7 +32,7 @@ namespace UnityVerseBridge.QuestApp
             // 콜라이더가 없으면 추가
             if (GetComponent<Collider>() == null)
             {
-                Debug.LogWarning($"[VRClickHandler] No collider found on {gameObject.name}. Adding BoxCollider.");
+                UnityEngine.Debug.LogWarning($"[VRClickHandler] No collider found on {gameObject.name}. Adding BoxCollider.");
                 gameObject.AddComponent<BoxCollider>();
             }
         }
@@ -42,7 +42,7 @@ namespace UnityVerseBridge.QuestApp
         /// </summary>
         public void OnVRClick()
         {
-            Debug.Log($"[VRClickHandler] {gameObject.name} clicked!");
+            // Debug.Log($"[VRClickHandler] {gameObject.name} clicked!");
             
             // 이벤트 실행
             onVRClick?.Invoke();
@@ -71,12 +71,12 @@ namespace UnityVerseBridge.QuestApp
         /// </summary>
         public void TestMethod1()
         {
-            Debug.Log("[VRClickHandler] Test Method 1 called!");
+            // Debug.Log("[VRClickHandler] Test Method 1 called!");
         }
         
         public void TestMethod2()
         {
-            Debug.Log("[VRClickHandler] Test Method 2 called!");
+            // Debug.Log("[VRClickHandler] Test Method 2 called!");
         }
         
         public void ToggleObject(GameObject target)
@@ -84,7 +84,7 @@ namespace UnityVerseBridge.QuestApp
             if (target != null)
             {
                 target.SetActive(!target.activeSelf);
-                Debug.Log($"[VRClickHandler] Toggled {target.name} to {target.activeSelf}");
+                // Debug.Log($"[VRClickHandler] Toggled {target.name} to {target.activeSelf}");
             }
         }
         

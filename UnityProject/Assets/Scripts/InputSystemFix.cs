@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace UnityVerseBridge.Quest
+namespace UnityVerse.QuestApp
 {
     /// <summary>
     /// Fixes InputSystem NullReferenceException in Unity 6 with Meta XR SDK
@@ -36,16 +36,16 @@ namespace UnityVerseBridge.Quest
                     // Ensure Input System is properly initialized
                     if (InputSystem.devices.Count == 0)
                     {
-                        Debug.Log("[InputSystemFix] Reinitializing Input System to prevent null reference errors");
+                        UnityEngine.Debug.Log("[InputSystemFix] Reinitializing Input System to prevent null reference errors");
                         InputSystem.Update();
                     }
                     
-                    Debug.Log($"[InputSystemFix] Input System initialized with {InputSystem.devices.Count} devices");
+                    UnityEngine.Debug.Log($"[InputSystemFix] Input System initialized with {InputSystem.devices.Count} devices");
                 }
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning($"[InputSystemFix] Error during Input System initialization: {e.Message}");
+                UnityEngine.Debug.LogWarning($"[InputSystemFix] Error during Input System initialization: {e.Message}");
             }
         }
         

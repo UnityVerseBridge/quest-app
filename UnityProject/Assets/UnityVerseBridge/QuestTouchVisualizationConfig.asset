@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86f78b632ec81495a982b2bff6952fbd, type: 3}
+  m_Name: QuestTouchVisualizationConfig
+  m_EditorClassIdentifier: 
+  mode: 4
+  enableInHost: 1
+  enableInClient: 0
+  cubeSize: 0.2
+  cubeDistance: 2
+  cubeColor: {r: 1, g: 0, b: 0, a: 1}
+  cubePrefab: {fileID: 0}
+  planeDistance: 0.5
+  dotSize: 0.05
+  dotColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  planeDotPrefab: {fileID: 0}
+  showCoordinates: 1
+  coordinateFontSize: 50
+  coordinateTextColor: {r: 1, g: 1, b: 1, a: 1}
+  canvasRenderMode: 0
+  canvasSortingOrder: 100
+  canvasIndicatorSize: 50
+  canvasIndicatorColor: {r: 1, g: 0, b: 0, a: 1}
+  canvasShowBothCoordinates: 1
+  canvasIndicatorPrefab: {fileID: 0}
+  maxTouchesDisplay: 10
+  touchFadeTime: 0
