@@ -2360,6 +2360,75 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9f365cf844c03449bc8973eead2c3c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1612011254
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1612011257}
+  - component: {fileID: 1612011256}
+  - component: {fileID: 1612011255}
+  m_Layer: 0
+  m_Name: UnityVerseBridge_Quest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1612011255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612011254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11637da0070aa4cdd9a8a5b2d1353be7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1612011256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612011254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71e414be65d6242bf8715bfe3904daa6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unityVerseConfig: {fileID: 11400000, guid: 37f7097e8b602427fb4b747f4de2ebb4, type: 2}
+  legacyConfig: {fileID: 0}
+  touchVisualizationConfig: {fileID: 11400000, guid: 946d6e7fc54a64609a6975bc25eb16be, type: 2}
+  autoCreateTouchVisualizer: 1
+  vrCamera: {fileID: 1731298971}
+  videoDisplay: {fileID: 0}
+  questTouchCanvas: {fileID: 0}
+  mobileTouchArea: {fileID: 0}
+  mobileTouchFeedbackLayer: {fileID: 0}
+  showDebugUI: 0
+  debugDisplayMode: 0
+  enableAutoConnect: 1
+--- !u!4 &1612011257
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612011254}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &1731298971 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 1767192439, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
@@ -2520,78 +2589,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1743632699}
   m_CullTransparentMesh: 0
---- !u!1 &1772709359
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1772709361}
-  - component: {fileID: 1772709362}
-  - component: {fileID: 1772709360}
-  m_Layer: 0
-  m_Name: UnityVerseBridge_Quest
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1772709360
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1772709359}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71e414be65d6242bf8715bfe3904daa6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  configuration: {fileID: 11400000, guid: b0a9db7e865f649269db2a21ef6c78f5, type: 2}
-  webRtcConfiguration: {fileID: 11400000, guid: 0d534b078c13a4ac8b87bcbd5ccf05fc, type: 2}
-  enableAutoConnect: 1
-  enableDebugLogging: 1
-  vrCamera: {fileID: 1731298971}
-  enableVideoStreaming: 1
-  enableTouchReceiving: 1
-  enableHapticFeedback: 1
-  touchCanvas: {fileID: 0}
-  videoDisplay: {fileID: 0}
-  enableVideoReceiving: 0
-  enableTouchSending: 0
-  enableHapticReceiving: 0
-  connectionUI: {fileID: 0}
---- !u!4 &1772709361
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1772709359}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1772709362
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1772709359}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe4d792f72284af40ac9b190ff482dd1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bridgeManager: {fileID: 1772709360}
 --- !u!1 &1807497889
 GameObject:
   m_ObjectHideFlags: 0
@@ -4965,4 +4962,4 @@ SceneRoots:
   - {fileID: 1017698943352573226}
   - {fileID: 876656115}
   - {fileID: 3953970342977539823}
-  - {fileID: 1772709361}
+  - {fileID: 1612011257}

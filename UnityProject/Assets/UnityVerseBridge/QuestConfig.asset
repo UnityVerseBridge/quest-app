@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: QuestConfig
   m_EditorClassIdentifier: 
   signalingUrl: ws://1.219.187.87:9090
-  roomId: quest-2
+  roomId: quest-1
   autoGenerateRoomId: 0
   requireAuthentication: 1
   authKey: development-key
   roleDetection: 0
   manualRole: 0
-  videoQuality: 0
-  customResolution: {x: 640, y: 360}
+  videoQuality: 1
+  customResolution: {x: 1280, y: 720}
   targetFramerate: 30
   connectionTimeout: 30
   maxReconnectAttempts: 3

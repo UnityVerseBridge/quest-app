@@ -19,18 +19,13 @@ This document analyzes the component structure across the UnityVerse project to 
 
 ### Quest App Components
 
-#### QuestAppInitializer
-- **Purpose**: Entry point for Quest VR application
-- **Dependencies**: 
-  - WebRtcManager/MultiPeerWebRtcManager
-  - ConnectionConfig
-  - WebRtcConfiguration
-- **Responsibilities**:
-  - WebRTC initialization
-  - Signaling connection
-  - Client registration (as "quest")
-  - Peer connection management
-  - Error handling and reconnection
+#### ~~QuestAppInitializer~~ (Removed)
+- **Status**: Removed - functionality moved to UnityVerseBridgeManager
+- **Previous Purpose**: Entry point for Quest VR application
+- **Migration**: 
+  - UnityVerseBridgeManager now handles all initialization
+  - UnityVerseConfig automatically detects Quest platform
+  - WebRtcManager handles WebRTC initialization internally
 
 #### VrStreamSender
 - **Purpose**: Streams VR camera feed to mobile devices
@@ -217,7 +212,7 @@ IWebRtcManager (Interface)
 └── MultiPeerWebRtcManager (1:N)
 
 Quest Components
-├── QuestAppInitializer → IWebRtcManager, ConnectionConfig
+├── ~~QuestAppInitializer~~ → (Removed - use UnityVerseBridgeManager)
 ├── VrStreamSender → IWebRtcManager
 ├── VrMRStreamSender → MultiPeerWebRtcManager
 ├── VrTouchReceiver → IWebRtcManager
